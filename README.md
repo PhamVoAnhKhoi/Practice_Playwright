@@ -1,8 +1,9 @@
-<<<<<<< HEAD
+
 # Hello World Project
-=======
+
 # Hello World
->>>>>>> 3ecd39328e7f9079a8bec4e0499b8cc05a6ab01d
+
+# Practice Playwright
 
 
 
@@ -19,22 +20,24 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-<<<<<<< HEAD
+
 git remote add origin https://gitsdc.tma.com.vn/pvakhoi-batch49/hello-world-project.git
-=======
+
 git remote add origin https://gitsdc.tma.com.vn/pvakhoi-batch49/hello-world.git
->>>>>>> 3ecd39328e7f9079a8bec4e0499b8cc05a6ab01d
+
+git remote add origin https://gitsdc.tma.com.vn/pvakhoi-batch49/practice-playwright.git
+
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-<<<<<<< HEAD
 - [ ] [Set up project integrations](https://gitsdc.tma.com.vn/pvakhoi-batch49/hello-world-project/-/settings/integrations)
-=======
+
 - [ ] [Set up project integrations](https://gitsdc.tma.com.vn/pvakhoi-batch49/hello-world/-/settings/integrations)
->>>>>>> 3ecd39328e7f9079a8bec4e0499b8cc05a6ab01d
+
+- [ ] [Set up project integrations](https://gitsdc.tma.com.vn/pvakhoi-batch49/practice-playwright/-/settings/integrations)
 
 ## Collaborate with your team
 
