@@ -1,8 +1,3 @@
-
-# Hello World Project
-
-# Hello World
-
 # Practice Playwright
 
 
