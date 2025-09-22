@@ -1,8 +1,8 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="LoginSuite" parallel="false">
+<suite name="LoginSuite" parallel="methods" thread-count="3">
     <test name="LoginTests">
         <classes>
-            <class name = "models.Login"></class>
+            <class name = "tests.Login"/>
         </classes>
     </test>
 </suite>
