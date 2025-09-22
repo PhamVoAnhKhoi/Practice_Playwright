@@ -3,6 +3,9 @@ package pages;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class LoginPage {
@@ -65,23 +68,24 @@ public class LoginPage {
         return invalidError.textContent().trim();
     }
 
-    public String getRequiredMessage(String fieldName){
-        Locator locator;
-         if(fieldName.equals("username")){
-             locator = requiredMessage.nth(0);
-         }
-         else if (fieldName.equals("password")){
-             locator = requiredMessage.nth(1);
-         }
-         else {
-             throw new IllegalArgumentException("Invalid field name: " + fieldName);
-         }
-         //Check element
-        if (locator.isVisible()) {
-            String text = locator.textContent();
-            return text == null ? "Invisible text" : text.trim();
-        } else {
-            return "Invisible element"; // hoặc throw new AssertionError("Expected required message not visible for " + fieldName);
+    public void getRequiredMessage(String fieldName){
+
+    }
+
+    // Lấy tất cả message "Required"
+    public List<String> getRequiredMessages() {
+        List<String> messages = new ArrayList<>();
+        try {
+            int count = requiredMessage.count();
+            for (int i = 0; i < count; i++) {
+                if (requiredMessage.nth(i).isVisible()) {
+                    String text = requiredMessage.nth(i).textContent();
+                    messages.add(text == null ? "" : text.trim());
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Don't take Required messages: " + e.getMessage());
         }
+        return messages;
     }
 }
