@@ -1,95 +1,83 @@
 package tests;
 
-import base.baseTest;
-import org.testng.annotations.BeforeClass;
+import base.BaseTest;
+import io.qameta.allure.*;
+import io.qameta.allure.testng.AllureTestNg;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
+import pages.LoginPage;
 import utils.AccountData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Login extends baseTest {
+@Feature("Login")
+@Listeners({AllureTestNg.class})
+public class Login extends BaseTest {
 
-    pages.LoginPage loginPage;
-    String username = "username";
-    String password = "password";
-    AccountData accountData = new AccountData();
+    private static final Logger log = LoggerFactory.getLogger(Login.class);
+    LoginPage loginPage;
+
+
+    @BeforeMethod
+    public void setUpLoginPage(){
+        loginPage = new LoginPage(page);
+        loginPage.navigateToLoginPage();
+    }
 
     //Happy Test
-    @Test
+    @Test (description = "Happy Path Login Test")
+    @Description("Login successfully with correct Username & Password")
+    @Severity(SeverityLevel.CRITICAL)
+    @Story("Happy Login Test")
     public void happyPathLogin(){
-        loginPage = new pages.LoginPage(page);
-        //Navigate to Login Page
-        loginPage.navigateToLoginPage();
-
-        //Enter Account
-        loginPage.loginAccount(accountData.userName,accountData.passWord);//Nhập Password đúng
-
-        //Click Login button
-        loginPage.clickloginButton();
-
-        loginPage.isLoginSuccess();
+        loginPage.loginAccount(AccountData.userName,AccountData.passWord);//Nhập Password đúng
+        assertThat(loginPage.isLoginSuccess()).as("User should be logged in").isTrue();
     }
 
     //Unhappy Test
     //Invalid password
-    @Test
-    public void LoginWithInvalidPassword(){
-        loginPage = new pages.LoginPage(page);
-        //Navigate to Login Page
-        loginPage.navigateToLoginPage();
-
-        //Enter Account
-        loginPage.loginAccount(accountData.userName,accountData.invalidPassWord);
-
-        //Click Login button
-        loginPage.clickloginButton();
-
+    @Test (description = "Login with invalid Password")
+    @Description("Login fail with correct Username & invalid Password")
+    @Severity(SeverityLevel.CRITICAL)
+    @Story("Unhappy Login Test")
+    public void loginWithInvalidPassword(){
+        loginPage.loginAccount(AccountData.userName,AccountData.invalidPassWord);
         String err = loginPage.getinvalidError();
-        System.out.println("Error: " + err);
-        assertThat(err).isEqualTo(accountData.invalidStatus);
+        AssertionsForClassTypes.assertThat(err).isEqualTo(AccountData.invalidStatus);
     }
 
     //Empty Account
-    @Test
-    public void LoginWithEmptyAccount(){
-        loginPage = new pages.LoginPage(page);
-        loginPage.navigateToLoginPage();
-        loginPage.loginAccount(accountData.emptyUserName,accountData.emptyPassWord);//Username & Password is Empty
-        loginPage.clickloginButton();
-
-        List<String> err = loginPage.getRequiredMessages();
-        System.out.println("Errors: " + err);
-
-        assertThat(err).containsExactlyInAnyOrder(accountData.emptyStatus, accountData.emptyStatus);
+    @Test (description = "Login with empty Account")
+    @Description("Login fail with empty Username & Password")
+    @Severity(SeverityLevel.CRITICAL)
+    @Story("Unhappy Login Test")
+    public void loginWithEmptyAccount(){
+        loginPage.loginAccount(AccountData.emptyUserName,AccountData.emptyPassWord);//Username & Password is Empty
+        loginPage.emptyAccount();
     }
-    //Empty Username
-    @Test
-    public void LoginWithEmptyUsername(){
-        loginPage = new pages.LoginPage(page);
-        loginPage.navigateToLoginPage();
-        loginPage.loginAccount(accountData.emptyUserName,accountData.passWord);//Nhập Password đúng
-        loginPage.clickloginButton();
-
-        List<String> err = loginPage.getRequiredMessages();
-        System.out.println("Errors: " + err);
-
-        assertThat(err).containsExactlyInAnyOrder(accountData.emptyStatus);
+//    //Empty Username
+    @Test (description = "Login with empty Username")
+    @Description("Login fail with empty Username & correct Password")
+    @Severity(SeverityLevel.CRITICAL)
+    @Story("Unhappy Login Test")
+    public void loginWithEmptyUsername(){
+        loginPage.loginAccount(AccountData.emptyUserName,AccountData.passWord);//Nhập Password đúng
+        loginPage.getRequiredMessages();
     }
 
     //Empty Password
-    @Test
-    public void LoginWithEmptyPassword(){
-        loginPage = new pages.LoginPage(page);
-        loginPage.navigateToLoginPage();
-        loginPage.loginAccount(accountData.userName,accountData.emptyPassWord);//Password is Empty
-        loginPage.clickloginButton();
-
-        List<String> err = loginPage.getRequiredMessages();
-        System.out.println("Errors: " + err);
-
-        assertThat(err).containsExactlyInAnyOrder(accountData.emptyStatus);
+    @Test (description = "Login with empty Password")
+    @Description("Login fail with correct Username & empty Password")
+    @Severity(SeverityLevel.CRITICAL)
+    @Story("Unhappy Login Test")
+    public void loginWithEmptyPassword(){
+        loginPage.loginAccount(AccountData.userName,AccountData.emptyPassWord);//Password is Empty
+        loginPage.getRequiredMessages();
     }
 }

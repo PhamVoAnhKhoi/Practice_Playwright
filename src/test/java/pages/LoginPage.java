@@ -2,6 +2,12 @@ package pages;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import io.qameta.allure.Step;
+import org.assertj.core.api.Assert;
+import org.assertj.core.api.Assertions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import utils.AccountData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +25,9 @@ public class LoginPage {
     private Locator profileUser;
 
     private String waitElementLogin = "text=Dashboard";
+    private String loginPageURL = "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login";
+
+    private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 
     //Constructor LoginPage
     public LoginPage(Page page) {
@@ -32,56 +41,65 @@ public class LoginPage {
     }
 
     //Navigate to Login Page
+    @Step("Navigate to Login page.")
     public void navigateToLoginPage(){
-        page.navigate("https://opensource-demo.orangehrmlive.com/web/index.php/auth/login");
-        page.waitForTimeout(30000);
+        page.navigate(loginPageURL);
+        loginButton.waitFor();
     }
 
     //Enter Account
+    @Step("Login with username: {username}, password: {password}")
     public void loginAccount(String username, String password){
         userName.fill(username);
         passWord.fill(password);
-    }
-
-    //Click login button
-    public void clickloginButton(){
         loginButton.click();
     }
 
-    public void isLoginSuccess(){
+    @Step("Login success")
+    public boolean isLoginSuccess(){
         assertThat(page.waitForSelector(waitElementLogin));
         try {
-            if(profileUser.isVisible()){
-                System.out.println("Profile is visible");
-            }
-            else {
-                System.out.println("Profile is not visible");
-            }
-        }
-        catch(Error error){
-            System.out.println("Message: " + error);
+            profileUser.waitFor();
+            return profileUser.isVisible();
+        } catch(Exception e)
+        {
+            return false;
         }
     }
 
     //Show error
+    @Step("Invalid Invalid credentials")
     public String getinvalidError(){
         return invalidError.textContent().trim();
     }
 
-    // Lấy tất cả message "Required"
-    public List<String> getRequiredMessages() {
+    // Take all message "Required"
+    public List<String> getAllRequiredMessages() {
+        requiredMessage.first().waitFor();
         List<String> messages = new ArrayList<>();
-        try {
-            int count = requiredMessage.count();
-            for (int i = 0; i < count; i++) {
-                if (requiredMessage.nth(i).isVisible()) {
-                    String text = requiredMessage.nth(i).textContent();
-                    messages.add(text == null ? "" : text.trim());
-                }
+        int count = requiredMessage.count();
+        for (int i = 0; i < count; i++) {
+            if (requiredMessage.nth(i).isVisible()) {
+                String text = requiredMessage.nth(i).textContent();
+                messages.add(text == null ? "" : text.trim());
             }
-        } catch (Exception e) {
-            System.out.println("Don't take Required messages: " + e.getMessage());
         }
         return messages;
     }
+
+
+    public void emptyAccount()
+    {
+        List<String> err = getAllRequiredMessages();
+        Assertions.assertThat(err).containsExactlyInAnyOrder(AccountData.emptyStatus, AccountData.emptyStatus);
+        log.info("Errors: " + err);
+    }
+
+    public void getRequiredMessages()
+    {
+        List<String> err = getAllRequiredMessages();
+        Assertions.assertThat(err).containsExactlyInAnyOrder(AccountData.emptyStatus);
+        log.info("Errors: " + err);
+    }
+
 }

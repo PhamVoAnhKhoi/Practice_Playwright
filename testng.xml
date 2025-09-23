@@ -1,8 +1,14 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
 <suite name="LoginSuite" parallel="false" >
+    <listeners>
+        <!-- BẮT BUỘC: bật listener để Allure nhận step -->
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+    </listeners>
+
     <test name="LoginTests">
         <classes>
             <class name = "tests.Login"/>
+<!--            <class name = "tests.Admin"/>-->
         </classes>
     </test>
 </suite>
