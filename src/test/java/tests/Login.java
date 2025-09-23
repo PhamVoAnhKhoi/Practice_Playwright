@@ -4,6 +4,7 @@ import base.baseTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import pages.LoginPage;
 import utils.AccountData;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class Login extends baseTest {
 
-    pages.LoginPage loginPage;
+    LoginPage loginPage;
     String username = "username";
     String password = "password";
     AccountData accountData = new AccountData();
