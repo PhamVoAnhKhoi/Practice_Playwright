@@ -68,10 +68,6 @@ public class LoginPage {
         return invalidError.textContent().trim();
     }
 
-    public void getRequiredMessage(String fieldName){
-
-    }
-
     // Lấy tất cả message "Required"
     public List<String> getRequiredMessages() {
         List<String> messages = new ArrayList<>();

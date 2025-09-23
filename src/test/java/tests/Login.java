@@ -65,4 +65,31 @@ public class Login extends baseTest {
 
         assertThat(err).containsExactlyInAnyOrder(accountData.emptyStatus, accountData.emptyStatus);
     }
+    //Empty Username
+    @Test
+    public void LoginWithEmptyUsername(){
+        loginPage = new pages.LoginPage(page);
+        loginPage.navigateToLoginPage();
+        loginPage.loginAccount(accountData.emptyUserName,accountData.passWord);//Nhập Password đúng
+        loginPage.clickloginButton();
+
+        List<String> err = loginPage.getRequiredMessages();
+        System.out.println("Errors: " + err);
+
+        assertThat(err).containsExactlyInAnyOrder(accountData.emptyStatus);
+    }
+
+    //Empty Password
+    @Test
+    public void LoginWithEmptyPassword(){
+        loginPage = new pages.LoginPage(page);
+        loginPage.navigateToLoginPage();
+        loginPage.loginAccount(accountData.userName,accountData.emptyPassWord);//Password is Empty
+        loginPage.clickloginButton();
+
+        List<String> err = loginPage.getRequiredMessages();
+        System.out.println("Errors: " + err);
+
+        assertThat(err).containsExactlyInAnyOrder(accountData.emptyStatus);
+    }
 }
