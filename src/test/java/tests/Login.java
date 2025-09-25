@@ -17,7 +17,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Feature("Login")
-@Listeners({AllureTestNg.class})
 public class Login extends BaseTest {
 
     private static final Logger log = LoggerFactory.getLogger(Login.class);
