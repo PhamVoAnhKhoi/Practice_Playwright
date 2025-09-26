@@ -3,10 +3,12 @@ package pages;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import io.qameta.allure.Step;
+import io.qameta.allure.testng.AllureTestNg;
 import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testng.annotations.Listeners;
 import utils.AccountData;
 
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+
+@Listeners({AllureTestNg.class})
 public class LoginPage {
     private Page page;
 
