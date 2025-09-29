@@ -17,7 +17,6 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
-@Listeners({AllureTestNg.class})
 public class LoginPage {
     private Page page;
 

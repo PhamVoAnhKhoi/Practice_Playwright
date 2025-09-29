@@ -5,20 +5,29 @@ import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.AdminPage;
 import pages.LoginPage;
 import utils.AccountData;
+import utils.SystemUser;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class Admin extends BaseTest {
+    private static final Logger log = LoggerFactory.getLogger(Admin.class);
     LoginPage loginPage;
     AdminPage adminPage;
+
     @BeforeMethod
     public void setUpAdminPage(){
         loginPage = new LoginPage(page);
         adminPage = new AdminPage(page);
-
         loginPage.navigateToLoginPage();
         loginPage.loginAccount(AccountData.userName,AccountData.passWord);
         adminPage.clickAdminSideBarButton();
@@ -28,14 +37,28 @@ public class Admin extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("User managerment table")
     public void takeDataFromTable(){
-        adminPage.getTableColData();
-    }
+        List<SystemUser> users = adminPage.getTableColData();
+        assertThat(users).isNotEmpty();
 
+        SystemUser firstUser = users.get(0);
+        log.info("First user: {}", firstUser);
+
+        assertThat(firstUser.getUsername()).isNotBlank();
+        assertThat(firstUser.getUserRole()).isIn("Admin", "ESS"); // ví dụ hợp lý
+        assertThat(firstUser.getStatus()).isIn("Enabled", "Disabled");
+
+    }
 
     @Test(description = "Visible element")
     @Description("Check element is visible")
     public void checkElement(){
         adminPage.checkVisible();
+    }
+
+    @Test(description = "Visible element")
+    @Description("Check element is visible")
+    public void checkElementDynamic(){
+        adminPage.checkVisibleDynamic();
     }
 
 }
