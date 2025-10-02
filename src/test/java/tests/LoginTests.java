@@ -2,10 +2,8 @@ package tests;
 
 import base.BaseTest;
 import io.qameta.allure.*;
-import io.qameta.allure.testng.AllureTestNg;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import pages.LoginPage;
 import utils.AccountData;
@@ -17,9 +15,9 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Feature("Login")
-public class Login extends BaseTest {
+public class LoginTests extends BaseTest {
 
-    private static final Logger log = LoggerFactory.getLogger(Login.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginTests.class);
     LoginPage loginPage;
 
 
@@ -35,7 +33,7 @@ public class Login extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Happy Login Test")
     public void happyPathLogin(){
-        loginPage.loginAccount(AccountData.userName,AccountData.passWord);//Nhập Password đúng
+        loginPage.loginAccount(AccountData.USERNAME,AccountData.PASSWORD);//Password is correct
         assertThat(loginPage.isLoginSuccess()).as("User should be logged in").isTrue();
     }
 
@@ -46,9 +44,9 @@ public class Login extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Unhappy Login Test")
     public void loginWithInvalidPassword(){
-        loginPage.loginAccount(AccountData.userName,AccountData.invalidPassWord);
-        String err = loginPage.getinvalidError();
-        AssertionsForClassTypes.assertThat(err).isEqualTo(AccountData.invalidStatus);
+        loginPage.loginAccount(AccountData.USERNAME,AccountData.INVALIDPASSWORD);
+        String err = loginPage.getInvalidError();
+        AssertionsForClassTypes.assertThat(err).isEqualTo(AccountData.INVALIDSTATUS);
     }
 
     //Empty Account
@@ -57,17 +55,21 @@ public class Login extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Unhappy Login Test")
     public void loginWithEmptyAccount(){
-        loginPage.loginAccount(AccountData.emptyUserName,AccountData.emptyPassWord);//Username & Password is Empty
-        loginPage.emptyAccount();
+        loginPage.loginAccount(AccountData.EMPTYUSERNAME,AccountData.EMPTYUSERPASSWORD);//Username & Password is Empty
+        List<String> err = loginPage.getAllRequiredMessages();
+        assertThat(err).containsExactlyInAnyOrder(AccountData.EMPTYSTATUS,AccountData.EMPTYSTATUS);
+        log.info("Errors: " + err);
     }
-//    //Empty Username
+    //Empty Username
     @Test (description = "Login with empty Username")
     @Description("Login fail with empty Username & correct Password")
     @Severity(SeverityLevel.CRITICAL)
     @Story("Unhappy Login Test")
     public void loginWithEmptyUsername(){
-        loginPage.loginAccount(AccountData.emptyUserName,AccountData.passWord);//Nhập Password đúng
-        loginPage.getRequiredMessages();
+        loginPage.loginAccount(AccountData.EMPTYUSERNAME,AccountData.PASSWORD);//Password is correct
+        List<String> err = loginPage.getAllRequiredMessages();
+        assertThat(err).containsExactlyInAnyOrder(AccountData.EMPTYSTATUS);
+        log.info("Errors: " + err);
     }
 
     //Empty Password
@@ -76,7 +78,9 @@ public class Login extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Unhappy Login Test")
     public void loginWithEmptyPassword(){
-        loginPage.loginAccount(AccountData.userName,AccountData.emptyPassWord);//Password is Empty
-        loginPage.getRequiredMessages();
+        loginPage.loginAccount(AccountData.USERNAME,AccountData.EMPTYUSERPASSWORD);//Username is correct
+        List<String> err = loginPage.getAllRequiredMessages();
+        assertThat(err).containsExactlyInAnyOrder(AccountData.EMPTYSTATUS);
+        log.info("Errors: " + err);
     }
 }

@@ -5,7 +5,6 @@ import com.microsoft.playwright.Page;
 import io.qameta.allure.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 import utils.SystemUser;
 
 import java.util.*;
@@ -19,20 +18,22 @@ public class AdminPage {
     private Page page;
     private Locator sideBar;
     private Locator adminSBButton; //Xpath Axes
-
+    private Locator rows;
+    private Locator headerTitle;
+    //Sidebar menu
     private Locator sideBarMenuAxes;
     private Locator sideBarMenuDynamic;
-
+    //Top bar
     private Locator topBarDynamic;
     private Locator topBarAxes;
-
-    private Locator headerTitle;
+    //table header
     private Locator tableHeader ;
     private Locator tableHeaderAxes;
-
-    private Locator rows;
+    //Label table sort
     private Locator labelSortDynamic;
     private Locator labelSortAxes;
+
+    private Locator dropDownAdmin;
 
     private static final Logger log = LoggerFactory.getLogger(AdminPage.class);
 
@@ -41,6 +42,7 @@ public class AdminPage {
         this.sideBar = page.locator("nav[class='oxd-navbar-nav']");
         this.adminSBButton = page.locator("//a[contains(@class,'oxd-main-menu')]/descendant::span[normalize-space(.)='Admin']");
         this.headerTitle = page.locator("//div[contains(@class,'oxd-topbar-header-title')]/descendant::h6[normalize-space(.)='Admin']");
+        this.rows = page.locator("//div[contains(@class,'oxd-table-body')]/descendant::div[contains(@class,'oxd-table-row')]");
 
         this.sideBarMenuAxes = page.locator("//ul[@class='oxd-main-menu']/ancestor::div[contains(@class,'oxd-sidepanel-body')]");
         this.sideBarMenuDynamic = page.locator("//span[contains(@class,'oxd-main-menu-item') and normalize-space(.)='Admin']");
@@ -51,12 +53,10 @@ public class AdminPage {
         this.tableHeader = page.locator("//div[contains(@class,'oxd-table-header') and @role='rowgroup']");
         this.tableHeaderAxes = page.locator("//div[contains(@class,'oxd-table-header')]//descendant::div[contains(@class,'oxd-table-row')]" );
 
-
-
-        this.rows = page.locator("//div[contains(@class,'oxd-table-body')]/descendant::div[contains(@class,'oxd-table-row')]");
-
         this.labelSortDynamic = page.locator("//label[contains(@class,'oxd-label') and normalize-space(text())='Username']");
         this.labelSortAxes = page.locator("//input[contains(@class,'oxd-input')]//ancestor::div[contains(@class,'oxd-input-group')]//label[normalize-space(text())='Username']");
+
+        this.dropDownAdmin = page.locator("//label[contains(@class,'oxd-label') and normalize-space(text())='User Role']/following-sibling::div[contains(@class,'oxd-select-text-input')]");
     }
 
     public List<SystemUser> getTableColData(){

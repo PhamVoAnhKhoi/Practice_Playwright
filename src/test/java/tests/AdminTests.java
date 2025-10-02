@@ -19,8 +19,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class Admin extends BaseTest {
-    private static final Logger log = LoggerFactory.getLogger(Admin.class);
+public class AdminTests extends BaseTest {
+    private static final Logger log = LoggerFactory.getLogger(AdminTests.class);
     LoginPage loginPage;
     AdminPage adminPage;
 
@@ -29,7 +29,7 @@ public class Admin extends BaseTest {
         loginPage = new LoginPage(page);
         adminPage = new AdminPage(page);
         loginPage.navigateToLoginPage();
-        loginPage.loginAccount(AccountData.userName,AccountData.passWord);
+        loginPage.loginAccount(AccountData.USERNAME,AccountData.PASSWORD);
         adminPage.clickAdminSideBarButton();
     }
 
