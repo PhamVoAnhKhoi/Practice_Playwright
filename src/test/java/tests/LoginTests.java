@@ -33,7 +33,7 @@ public class LoginTests extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Happy Login Test")
     public void happyPathLogin(){
-        loginPage.loginAccount(AccountData.USERNAME,AccountData.PASSWORD);//Password is correct
+        loginPage.loginAccount(AccountData.ADMINUSERNAME,AccountData.ADMINPASSWORD);//Password is correct
         assertThat(loginPage.isLoginSuccess()).as("User should be logged in").isTrue();
     }
 
@@ -44,7 +44,7 @@ public class LoginTests extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Unhappy Login Test")
     public void loginWithInvalidPassword(){
-        loginPage.loginAccount(AccountData.USERNAME,AccountData.INVALIDPASSWORD);
+        loginPage.loginAccount(AccountData.ADMINUSERNAME,AccountData.INVALIDPASSWORD);
         String err = loginPage.getInvalidError();
         AssertionsForClassTypes.assertThat(err).isEqualTo(AccountData.INVALIDSTATUS);
     }
@@ -66,7 +66,7 @@ public class LoginTests extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Unhappy Login Test")
     public void loginWithEmptyUsername(){
-        loginPage.loginAccount(AccountData.EMPTYUSERNAME,AccountData.PASSWORD);//Password is correct
+        loginPage.loginAccount(AccountData.EMPTYUSERNAME,AccountData.ADMINPASSWORD);//Password is correct
         List<String> err = loginPage.getAllRequiredMessages();
         assertThat(err).containsExactlyInAnyOrder(AccountData.EMPTYSTATUS);
         log.info("Errors: " + err);
@@ -78,7 +78,7 @@ public class LoginTests extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Unhappy Login Test")
     public void loginWithEmptyPassword(){
-        loginPage.loginAccount(AccountData.USERNAME,AccountData.EMPTYUSERPASSWORD);//Username is correct
+        loginPage.loginAccount(AccountData.ADMINUSERNAME,AccountData.EMPTYUSERPASSWORD);//Username is correct
         List<String> err = loginPage.getAllRequiredMessages();
         assertThat(err).containsExactlyInAnyOrder(AccountData.EMPTYSTATUS);
         log.info("Errors: " + err);

@@ -29,7 +29,7 @@ public class AdminTests extends BaseTest {
         loginPage = new LoginPage(page);
         adminPage = new AdminPage(page);
         loginPage.navigateToLoginPage();
-        loginPage.loginAccount(AccountData.USERNAME,AccountData.PASSWORD);
+        loginPage.loginAccount(AccountData.ADMINUSERNAME,AccountData.ADMINPASSWORD);
         adminPage.clickAdminSideBarButton();
     }
 
