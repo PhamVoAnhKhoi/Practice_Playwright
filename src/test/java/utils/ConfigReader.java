@@ -32,26 +32,4 @@ public class ConfigReader {
     public static String getAdminPassword() {
         return getProperty("ADMINPASSWORD");
     }
-
-    public static String getInvalidUsername(){
-        return getProperty("INVALIDUSERNAME");
-    }
-
-    public static String getInvalidPassword(){
-        return getProperty("INVALIDPASSWORD");
-    }
-
-    public static String getInvalidStatus(){
-        return getProperty("INVALIDSTATUS");
-    }
-
-    public static String getEmptyUsername(){
-        return getProperty("EMPTYUSERNAME");
-    }
-    public static String getEmptyPassword(){
-        return getProperty("EMPTYUSERPASSWORD");
-    }
-    public static String getEmptyStatus(){
-        return getProperty("EMPTYSTATUS");
-    }
 }
