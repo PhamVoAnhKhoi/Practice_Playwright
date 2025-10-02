@@ -12,7 +12,7 @@ import java.util.*;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 
-public class AdminPage {
+public class UserManagementPage {
 
 
     private Page page;
@@ -20,43 +20,20 @@ public class AdminPage {
     private Locator adminSBButton; //Xpath Axes
     private Locator rows;
     private Locator headerTitle;
-    //Sidebar menu
-    private Locator sideBarMenuAxes;
-    private Locator sideBarMenuDynamic;
-    //Top bar
-    private Locator topBarDynamic;
-    private Locator topBarAxes;
+
     //table header
     private Locator tableHeader ;
-    private Locator tableHeaderAxes;
-    //Label table sort
-    private Locator labelSortDynamic;
-    private Locator labelSortAxes;
 
-    private Locator dropDownAdmin;
 
-    private static final Logger log = LoggerFactory.getLogger(AdminPage.class);
+    private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
 
-    public AdminPage(Page page){
+    public UserManagementPage(Page page){
         this.page = page;
         this.sideBar = page.locator("nav[class='oxd-navbar-nav']");
         this.adminSBButton = page.locator("//a[contains(@class,'oxd-main-menu')]/descendant::span[normalize-space(.)='Admin']");
         this.headerTitle = page.locator("//div[contains(@class,'oxd-topbar-header-title')]/descendant::h6[normalize-space(.)='Admin']");
         this.rows = page.locator("//div[contains(@class,'oxd-table-body')]/descendant::div[contains(@class,'oxd-table-row')]");
-
-        this.sideBarMenuAxes = page.locator("//ul[@class='oxd-main-menu']/ancestor::div[contains(@class,'oxd-sidepanel-body')]");
-        this.sideBarMenuDynamic = page.locator("//span[contains(@class,'oxd-main-menu-item') and normalize-space(.)='Admin']");
-
-        this.topBarDynamic = page.locator("//li[contains(@class,'oxd-topbar-body-nav-tab')]//span[contains(normalize-space(text()),'User Management')]");
-        this.topBarAxes = page.locator("//li[contains(@class,'oxd-topbar-body-nav-tab')]//descendant::span[normalize-space(text())='User Management']");
-
         this.tableHeader = page.locator("//div[contains(@class,'oxd-table-header') and @role='rowgroup']");
-        this.tableHeaderAxes = page.locator("//div[contains(@class,'oxd-table-header')]//descendant::div[contains(@class,'oxd-table-row')]" );
-
-        this.labelSortDynamic = page.locator("//label[contains(@class,'oxd-label') and normalize-space(text())='Username']");
-        this.labelSortAxes = page.locator("//input[contains(@class,'oxd-input')]//ancestor::div[contains(@class,'oxd-input-group')]//label[normalize-space(text())='Username']");
-
-        this.dropDownAdmin = page.locator("//label[contains(@class,'oxd-label') and normalize-space(text())='User Role']/following-sibling::div[contains(@class,'oxd-select-text-input')]");
     }
 
     public List<SystemUser> getTableColData(){
@@ -90,30 +67,7 @@ public class AdminPage {
         return users;
     }
 
-    @Step("Check visible")
-    public void checkVisible(){
-        log.info("Check Xpath Axes Visiable");
-        topBarAxes.waitFor();
-        assertThat(sideBarMenuAxes).isVisible();
-        assertThat(topBarAxes).isVisible();
-        tableHeaderAxes.waitFor();
-        assertThat(tableHeaderAxes).isVisible();
-        labelSortAxes.waitFor();
-        assertThat(labelSortAxes).isVisible();
-    }
-    @Step("Check Xpath Dynamic visiable")
-    public void checkVisibleDynamic(){
-        log.info("Check Xpath Dynamic visiable");
-        topBarDynamic.waitFor();
-        assertThat(sideBarMenuDynamic).isVisible();
-        assertThat(topBarDynamic).isVisible();
-        tableHeader.waitFor();
-        assertThat(tableHeader).isVisible();
-        labelSortDynamic.waitFor();
-        assertThat(labelSortDynamic).isVisible();
-
-    }
-    @Step("Click admin button on sidebar")
+    @Step("Click Admin button on sidebar")
     public void clickAdminSideBarButton(){
         sideBar.waitFor();
         assertThat(sideBar).isVisible();

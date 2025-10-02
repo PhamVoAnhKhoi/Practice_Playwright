@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import pages.AdminPage;
+import pages.UserManagementPage;
 import pages.LoginPage;
 import utils.AccountData;
 import utils.SystemUser;
@@ -22,22 +22,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AdminTests extends BaseTest {
     private static final Logger log = LoggerFactory.getLogger(AdminTests.class);
     LoginPage loginPage;
-    AdminPage adminPage;
+    UserManagementPage userManagementPage;
 
     @BeforeMethod
     public void setUpAdminPage(){
         loginPage = new LoginPage(page);
-        adminPage = new AdminPage(page);
+        userManagementPage = new UserManagementPage(page);
         loginPage.navigateToLoginPage();
         loginPage.loginAccount(AccountData.ADMINUSERNAME,AccountData.ADMINPASSWORD);
-        adminPage.clickAdminSideBarButton();
+        userManagementPage.clickAdminSideBarButton();
+        log.info("Navigate to Admin/User Management Page");
     }
 
     @Test(description = "Get colum data from table")
     @Severity(SeverityLevel.CRITICAL)
     @Story("User managerment table")
     public void takeDataFromTable(){
-        List<SystemUser> users = adminPage.getTableColData();
+        List<SystemUser> users = userManagementPage.getTableColData();
         assertThat(users).isNotEmpty();
 
         SystemUser firstUser = users.get(0);
@@ -47,18 +48,6 @@ public class AdminTests extends BaseTest {
         assertThat(firstUser.getUserRole()).isIn("Admin", "ESS"); // ví dụ hợp lý
         assertThat(firstUser.getStatus()).isIn("Enabled", "Disabled");
 
-    }
-
-    @Test(description = "Visible element")
-    @Description("Check element is visible")
-    public void checkElement(){
-        adminPage.checkVisible();
-    }
-
-    @Test(description = "Visible element")
-    @Description("Check element is visible")
-    public void checkElementDynamic(){
-        adminPage.checkVisibleDynamic();
     }
 
 }

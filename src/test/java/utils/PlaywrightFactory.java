@@ -10,8 +10,8 @@ public class PlaywrightFactory {
 
     public static Page initalizeBrowser(){
         playwright = Playwright.create();
-        boolean headed = Boolean.parseBoolean(System.getProperty("headed", "false")); //Default headed = "false"
-        int slowMo = Integer.parseInt(System.getProperty("slowMo", "0"));
+        boolean headed = Boolean.parseBoolean(ConfigReader.getProperty("headed")); //Default headed = "false"
+        int slowMo = Integer.parseInt(ConfigReader.getProperty("slowMo"));
         browser = playwright.chromium().launch(
                 new BrowserType.LaunchOptions()
                         .setHeadless(!headed) //false = Display Browser, true = Don't Display (Default)
