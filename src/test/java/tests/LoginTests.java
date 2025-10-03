@@ -9,6 +9,7 @@ import pages.LoginPage;
 import utils.AccountData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ConfigReader;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class LoginTests extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Happy Login Test")
     public void happyPathLogin(){
-        loginPage.loginAccount(AccountData.ADMINUSERNAME,AccountData.ADMINPASSWORD);//Password is correct
+        loginPage.loginAccount(ConfigReader.getAdminUser(),ConfigReader.getAdminPassword());//Password is correct
         assertThat(loginPage.isLoginSuccess()).as("User should be logged in").isTrue();
     }
 
@@ -44,7 +45,7 @@ public class LoginTests extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Unhappy Login Test")
     public void loginWithInvalidPassword(){
-        loginPage.loginAccount(AccountData.ADMINUSERNAME,AccountData.INVALIDPASSWORD);
+        loginPage.loginAccount(ConfigReader.getAdminUser(),AccountData.INVALIDPASSWORD);
         String err = loginPage.getInvalidError();
         AssertionsForClassTypes.assertThat(err).isEqualTo(AccountData.INVALIDSTATUS);
     }
@@ -66,7 +67,7 @@ public class LoginTests extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Unhappy Login Test")
     public void loginWithEmptyUsername(){
-        loginPage.loginAccount(AccountData.EMPTYUSERNAME,AccountData.ADMINPASSWORD);//Password is correct
+        loginPage.loginAccount(AccountData.EMPTYUSERNAME,ConfigReader.getAdminPassword());//Password is correct
         List<String> err = loginPage.getAllRequiredMessages();
         assertThat(err).containsExactlyInAnyOrder(AccountData.EMPTYSTATUS);
         log.info("Errors: " + err);
@@ -78,7 +79,7 @@ public class LoginTests extends BaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("Unhappy Login Test")
     public void loginWithEmptyPassword(){
-        loginPage.loginAccount(AccountData.ADMINUSERNAME,AccountData.EMPTYUSERPASSWORD);//Username is correct
+        loginPage.loginAccount(ConfigReader.getAdminUser(),AccountData.EMPTYUSERPASSWORD);//Username is correct
         List<String> err = loginPage.getAllRequiredMessages();
         assertThat(err).containsExactlyInAnyOrder(AccountData.EMPTYSTATUS);
         log.info("Errors: " + err);

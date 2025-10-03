@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 import pages.UserManagementPage;
 import pages.LoginPage;
 import utils.AccountData;
+import utils.ConfigReader;
 import utils.SystemUser;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class AdminTests extends BaseTest {
         loginPage = new LoginPage(page);
         userManagementPage = new UserManagementPage(page);
         loginPage.navigateToLoginPage();
-        loginPage.loginAccount(AccountData.ADMINUSERNAME,AccountData.ADMINPASSWORD);
+        loginPage.loginAccount(ConfigReader.getAdminUser(),ConfigReader.getAdminPassword());
         userManagementPage.clickAdminSideBarButton();
         log.info("Navigate to Admin/User Management Page");
     }
@@ -47,7 +48,5 @@ public class AdminTests extends BaseTest {
         assertThat(firstUser.getUsername()).isNotBlank();
         assertThat(firstUser.getUserRole()).isIn("Admin", "ESS"); // ví dụ hợp lý
         assertThat(firstUser.getStatus()).isIn("Enabled", "Disabled");
-
     }
-
 }

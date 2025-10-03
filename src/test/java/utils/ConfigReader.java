@@ -32,4 +32,5 @@ public class ConfigReader {
     public static String getAdminPassword() {
         return getProperty("ADMINPASSWORD");
     }
+
 }

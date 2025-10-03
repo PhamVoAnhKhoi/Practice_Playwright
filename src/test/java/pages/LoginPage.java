@@ -5,6 +5,8 @@ import com.microsoft.playwright.Page;
 import io.qameta.allure.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.ConfigReader;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +21,6 @@ public class LoginPage {
     private Locator profileUser;
 
     private String waitElementLogin = "text=Dashboard";
-    private String loginPageURL = "https://opensource-demo.orangehrmlive.com/web/index.php/auth/login";
 
     private static final Logger log = LoggerFactory.getLogger(LoginPage.class);
 
@@ -37,7 +38,7 @@ public class LoginPage {
     //Navigate to Login Page
     @Step("Navigate to Login page.")
     public void navigateToLoginPage(){
-        page.navigate(loginPageURL);
+        page.navigate(ConfigReader.getLoginPageUrl());
         loginButton.waitFor();
     }
 
