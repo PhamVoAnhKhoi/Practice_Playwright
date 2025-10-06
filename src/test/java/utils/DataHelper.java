@@ -1,16 +1,23 @@
 package utils;
 
+import java.util.UUID;
+
 public class DataHelper {
     private DataHelper(){}
+
+    private static String getTimestamp() {
+        return String.valueOf(System.currentTimeMillis());
+    }
+
     public static String generateUniqueFirstName() {
-        return "";
+        return "FirstName_" + getTimestamp();
     }
 
     public static String generateUniqueLastName() {
-        return "";
+        return "LastName_" + getTimestamp();
     }
 
     public static String generateUniqueUsername() {
-        return "";
+        return "User_" + getTimestamp();
     }
 }

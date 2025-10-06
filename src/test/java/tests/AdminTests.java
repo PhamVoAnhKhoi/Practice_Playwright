@@ -31,8 +31,13 @@ public class AdminTests extends BaseTest {
         userManagementPage = new UserManagementPage(page);
         loginPage.navigateToLoginPage();
         loginPage.loginAccount(ConfigReader.getAdminUser(),ConfigReader.getAdminPassword());
+        assertThat(userManagementPage.isSidebarVisible())
+                .as("Sidebar must be visible after log in successfully")
+                .isTrue();
         userManagementPage.clickAdminSideBarButton();
-        log.info("Navigate to Admin/User Management Page");
+        assertThat(userManagementPage.isHeaderTitleVisible())
+                .as("Header title must be visible")
+                .isTrue();
     }
 
     @Test(description = "Get colum data from table")

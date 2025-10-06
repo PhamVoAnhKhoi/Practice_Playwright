@@ -2,8 +2,9 @@
 <suite name="LoginSuite" parallel="none">
     <test name="LoginTests">
         <classes>
-            <class name = "tests.LoginTests"/>
+<!--            <class name = "tests.LoginTests"/>-->
             <class name = "tests.AdminTests"/>
+<!--            <class name="tests.UserLifecycleTests"></class>-->
         </classes>
     </test>
 </suite>

@@ -12,10 +12,9 @@ public class PIMPage {
     private Page page;
     private Locator pimSBButon;
     private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
-    public PIMPage(){
+    public PIMPage(Page page){
         this.page = page;
         this.pimSBButon = page.locator("//a[contains(@class,'oxd-main-menu')]/descendant::span[normalize-space(.)='PIM']");
-
     }
     @Step("Click PIM button on sidebar")
     public void clickPIMSideBarButton(){

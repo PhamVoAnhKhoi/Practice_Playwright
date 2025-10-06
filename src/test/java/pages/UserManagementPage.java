@@ -2,6 +2,7 @@ package pages;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.TimeoutError;
 import io.qameta.allure.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,11 +71,28 @@ public class UserManagementPage {
     @Step("Click Admin button on sidebar")
     public void clickAdminSideBarButton(){
         sideBar.waitFor();
-        assertThat(sideBar).isVisible();
-        assertThat(adminSBButton).isVisible();
-        log.info("SideBar visiable");
         adminSBButton.click();
-        log.info("Header:" + headerTitle.textContent());
-        assertThat(headerTitle).isVisible();
+    }
+
+    @Step("Sidebar is visible")
+    public boolean isSidebarVisible(){
+        try{
+            adminSBButton.waitFor();
+            return adminSBButton.isVisible();
+        }
+        catch(TimeoutError e){
+            return false;
+        }
+    }
+
+    @Step("Header title is visible")
+    public boolean isHeaderTitleVisible(){
+        try{
+            headerTitle.waitFor();
+            return headerTitle.isVisible();
+        }
+        catch(TimeoutError e){
+            return false;
+        }
     }
 }

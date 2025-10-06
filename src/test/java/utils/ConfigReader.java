@@ -8,9 +8,8 @@ public class ConfigReader {
     private static Properties properties;
 
     static {
-        try {
-            properties = new Properties();
-            FileInputStream fis = new FileInputStream("src/test/resources/config.properties");
+        properties = new Properties();
+        try (FileInputStream fis = new FileInputStream("src/test/resources/config.properties")){
             properties.load(fis);
         } catch (IOException e) {
             throw new RuntimeException("Could not load config.properties file", e);
