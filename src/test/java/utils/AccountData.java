@@ -8,4 +8,6 @@ public class AccountData {
     public static final String EMPTYUSERNAME = "";
     public static final String EMPTYUSERPASSWORD = "";
     public static final String EMPTYSTATUS = "Required";
+
+    public static final String EMPLOYEEPASSWORD = "Tma@2022@T1P";
 }
