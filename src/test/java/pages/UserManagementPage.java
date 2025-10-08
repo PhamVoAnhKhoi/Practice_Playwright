@@ -21,10 +21,13 @@ public class UserManagementPage {
     private Locator adminSBButton; //Xpath Axes
     private Locator rows;
     private Locator headerTitle;
-
-    //table header
-    private Locator tableHeader ;
-
+    private Locator tableHeader;//table header
+    private Locator inputUsername;
+    private Locator searchButton;
+    private Locator iconDeleteButton;
+    private Locator confirmDeleteButton;
+    private Locator toastSuccessfully;
+    private Locator userNameTable;
 
     private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
 
@@ -35,6 +38,12 @@ public class UserManagementPage {
         this.headerTitle = page.locator("//div[contains(@class,'oxd-topbar-header-title')]/descendant::h6[normalize-space(.)='Admin']");
         this.rows = page.locator("//div[contains(@class,'oxd-table-body')]/descendant::div[contains(@class,'oxd-table-row')]");
         this.tableHeader = page.locator("//div[contains(@class,'oxd-table-header') and @role='rowgroup']");
+        this.inputUsername = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(text()),'Username')]/parent::div/following-sibling::div/input");
+        this.searchButton = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[contains(@class,'oxd-button') and normalize-space(.)='Search']");
+        this.iconDeleteButton = page.locator("//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
+        this.confirmDeleteButton = page.locator("//div[contains(@class,'oxd-sheet')]/descendant::button[contains(@class,'oxd-button') and contains(normalize-space(.),'Yes')]");
+        this.toastSuccessfully = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'Successfully')]");
+        this.userNameTable = page.locator("//div[contains(@class,'oxd-table-card-cell-checkbox')]/ancestor::div[contains(@class,'oxd-table-cell')]/following-sibling::div[1]/div");
     }
 
     public List<SystemUser> getTableColData(){
@@ -92,6 +101,55 @@ public class UserManagementPage {
             return headerTitle.isVisible();
         }
         catch(TimeoutError e){
+            return false;
+        }
+    }
+
+    @Step("Search user by Username")
+    public void searchUsername(String userName){
+        inputUsername.fill(userName);
+        int oldCount = rows.count(); //Store the number of old row in table
+        log.info("oldCount: " + oldCount);
+        searchButton.click();
+        //page.waitForTimeout(2000);
+        page.waitForCondition(() -> rows.count() != oldCount, new Page.WaitForConditionOptions().setTimeout(5000));
+        log.info("row: " + rows.count());
+    }
+
+    @Step("Delete user on table")
+    public void deleteUser(){
+        iconDeleteButton.waitFor();
+        iconDeleteButton.click();
+        confirmDeleteButton.waitFor();
+        confirmDeleteButton.click();
+    }
+    @Step("Delete Successfully")
+    public boolean isDeleteSuccessfully(){
+        try{
+            toastSuccessfully.waitFor();
+            return toastSuccessfully.isVisible();
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
+
+    @Step("Check username visible in table")
+    public boolean isUsenameVisibleInTable(String userName){
+        try{
+            userNameTable.waitFor();
+            String username = userNameTable.innerText();
+            log.info("username: " + username);
+            log.info("userName: " + userName);
+            if (username.equals(userName)){
+                log.info("Username in table is correct");
+                return userNameTable.isVisible();
+            }
+            else {
+                return false;
+            }
+        }
+        catch(Exception e){
             return false;
         }
     }

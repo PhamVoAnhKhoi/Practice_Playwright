@@ -41,6 +41,6 @@ public class DataHelper {
     }
 
     public static String generateUniqueUsername() {
-        return "User_" + getTimestamp();
+        return "Username_" + getTimestamp();
     }
 }

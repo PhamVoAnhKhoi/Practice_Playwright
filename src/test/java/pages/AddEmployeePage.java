@@ -2,6 +2,7 @@ package pages;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,13 +46,15 @@ public class AddEmployeePage {
     }
 
     @Step("Input Employee information")
+    @Description("FirstName: firstName, LastName: lastName, ID: employeeId")
     public void addEmployee(String firstName, String lastName, String employeeId){
         inputFirstName.fill(firstName);
         inputLastName.fill(lastName);
         inputEmpyeeId.fill(employeeId);
     }
 
-    @Step("Input Login Account Details")
+    @Step("Input Login Account Details:")
+    @Description("Username: {userName}, Password: {passWord}, Confirm password: {confirmPassWord}")
     public void addDetailsUser(String userName, String passWord, String confirmPassWord){
         inputConfirmPassword.waitFor();
         inputUsername.fill(userName);
