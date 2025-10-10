@@ -4,6 +4,7 @@ import base.BaseTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.*;
@@ -17,7 +18,7 @@ public class UserLifecycleTests extends BaseTest {
     private static final Logger log = LoggerFactory.getLogger(LoginTests.class);
     LoginPage loginPage;
     AddEmployeePage addEmployeePage;
-    PIMPage employeeListPage;
+    PIMPage pimPage;
     UserManagementPage userManagementPage;
     AddUserPage addUserPage;
     String uniqueFirstName;
@@ -25,32 +26,49 @@ public class UserLifecycleTests extends BaseTest {
     String uniqueFullName;
     String uniqueUserName;
     String uniqueUserId;
+
+    @BeforeClass
+    public void generateAccount(){
+        log.info("======== Generate unique data for User ========");
+        uniqueFirstName = DataHelper.generateUniqueFirstName();
+        log.info("FirstName: " + uniqueFirstName);
+        uniqueLastName = DataHelper.generateUniqueLastName();
+        log.info("LastName: " + uniqueLastName);
+        uniqueFullName = uniqueFirstName + "  " + uniqueLastName;
+        log.info("FullName: " + uniqueFullName);
+        uniqueUserName = DataHelper.generateUniqueUsername();
+        log.info("Unique: " + uniqueUserName);
+        uniqueUserId = DataHelper.generateRandomUserId(5);
+        log.info("Id: " +uniqueUserId);
+    }
+
     @BeforeMethod
     public void setUpUserLifecycle(){
         loginPage = new LoginPage(page);
         addEmployeePage = new AddEmployeePage(page);
-        employeeListPage = new PIMPage(page);
+        pimPage = new PIMPage(page);
         userManagementPage = new UserManagementPage(page);
         addUserPage = new AddUserPage(page);
         loginPage.navigateToLoginPage();
         loginPage.loginAccount(ConfigReader.getAdminUser(),ConfigReader.getAdminPassword());
-        genarateAccount();
+
     }
 
     @Test
-    public void createUser(){
+    public void createEmployeeAndUser(){
         createEmployee();
-        addUser();
+        createUser();
     }
 
-    @AfterMethod
-    public void resetLifecycle(){
+    @Test(dependsOnMethods = {"createEmployeeAndUser"})
+    public void deleteEmployeeAndUser(){
         deleteUser();
         deleteEmployee();
     }
 
-    public void createEmployee(){
-        employeeListPage.clickPIMSideBarButton();
+    private void createEmployee(){
+        log.info("======== Create Employee ========");
+        pimPage.clickPIMSideBarButton();
         addEmployeePage.navigateToAddEmployeePage();
         addEmployeePage.addEmployee(uniqueFirstName,uniqueLastName,uniqueUserId);
         //addEmployeePage.clickCreateLoginDetailsButton();
@@ -63,7 +81,8 @@ public class UserLifecycleTests extends BaseTest {
 
     }
 
-    public void addUser(){
+    private void createUser(){
+        log.info("======== Create user ========");
         userManagementPage.clickAdminSideBarButton();
         assertThat(userManagementPage.isHeaderTitleVisible())
                 .as("Header tittle must be visible")
@@ -82,44 +101,52 @@ public class UserLifecycleTests extends BaseTest {
         log.info("Create Successfully");
 
         //check user is visible
+        log.info("======== Check user is visible in table ========");
         userManagementPage.clickAdminSideBarButton();
         userManagementPage.searchUsername(uniqueUserName);
+        userManagementPage.waitForSearchResult();
         assertThat(userManagementPage.isUsenameVisibleInTable(uniqueUserName)).isTrue();
         log.info("Username is visible in table");
     }
 
-    public void genarateAccount(){
-        uniqueFirstName = DataHelper.generateUniqueFirstName();
-        log.info("FirstName: " + uniqueFirstName);
-        uniqueLastName = DataHelper.generateUniqueLastName();
-        log.info("LastName: " + uniqueLastName);
-        uniqueFullName = uniqueFirstName + "  " + uniqueLastName;
-        log.info("FullName: " + uniqueFullName);
-        uniqueUserName = DataHelper.generateUniqueUsername();
-        log.info("Unique: " + uniqueUserName);
-        uniqueUserId = DataHelper.generateRandomUserId(5);
-        log.info("Id: " +uniqueUserId);
-    }
-
-    public void deleteUser(){
+    private void deleteUser(){
+        log.info("======== Delete user ========");
         userManagementPage.clickAdminSideBarButton();
         userManagementPage.searchUsername(uniqueUserName);
-
+        userManagementPage.waitForSearchResult();
         userManagementPage.deleteUser();
         assertThat(userManagementPage.isDeleteSuccessfully())
                 .as("Delete fail")
                 .isTrue();
         log.info("Delete user Successfully");
+
+        log.info("======== Check user ========");
+        userManagementPage.searchUsername(uniqueUserName);
+        assertThat(userManagementPage.isUsernameInvisibleAfterDelete())
+                .as("Notification No Record Found must be visible")
+                .isTrue();
+        log.info("No record is found");
+
     }
 
-    public void deleteEmployee(){
-        employeeListPage.clickPIMSideBarButton();
-        employeeListPage.navigateToEmployeeListPage();
-        employeeListPage.searchEmployeeById(uniqueUserId);
-        employeeListPage.deleteEmployee();
-        assertThat(employeeListPage.isDeleteSuccessfully())
+    private void deleteEmployee(){
+        log.info("======== Delete employee ========");
+        pimPage.clickPIMSideBarButton();
+        pimPage.navigateToEmployeeListPage();
+        pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueFullName);
+        pimPage.waitForSearchResult();
+        pimPage.deleteEmployee();
+        assertThat(pimPage.isDeleteSuccessfully())
                 .as("Delete fail")
                 .isTrue();
         log.info("Delete Employee Successfully");
+
+        log.info("======== Check employee ========");
+        pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueFullName);
+        assertThat(pimPage.isEmployeeInvisibleAfterDelete())
+                .as("Notification No Record Found must be visible")
+                .isTrue();
+        log.info("No record is found");
     }
+
 }
