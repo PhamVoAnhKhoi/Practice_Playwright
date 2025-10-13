@@ -1,22 +1,25 @@
 package tests;
 
-import base.BaseTest;
+import base.AuthenticatedBaseTest;
+import io.qameta.allure.Description;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.*;
 import utils.AccountData;
-import utils.ConfigReader;
 import utils.DataHelper;
+//import utils.AccountData;
+//import utils.ConfigReader;
+//import utils.DataHelper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class UserLifecycleTests extends BaseTest {
+public class UserLifecycleTests extends AuthenticatedBaseTest {
     private static final Logger log = LoggerFactory.getLogger(LoginTests.class);
-    LoginPage loginPage;
     AddEmployeePage addEmployeePage;
     PIMPage pimPage;
     UserManagementPage userManagementPage;
@@ -44,23 +47,23 @@ public class UserLifecycleTests extends BaseTest {
 
     @BeforeMethod
     public void setUpUserLifecycle(){
-        loginPage = new LoginPage(page);
         addEmployeePage = new AddEmployeePage(page);
         pimPage = new PIMPage(page);
         userManagementPage = new UserManagementPage(page);
         addUserPage = new AddUserPage(page);
-        loginPage.navigateToLoginPage();
-        loginPage.loginAccount(ConfigReader.getAdminUser(),ConfigReader.getAdminPassword());
-
     }
 
-    @Test
+    @Test(description = "Test flow: Create Employee & User")
+    @Severity(SeverityLevel.NORMAL)
     public void createEmployeeAndUser(){
         createEmployee();
         createUser();
     }
 
-    @Test(dependsOnMethods = {"createEmployeeAndUser"})
+    @Test(description = "Test flow: Delete Empolyee & User",
+            dependsOnMethods = {"createEmployeeAndUser"})
+    @Description("Clean up data after test")
+    @Severity(SeverityLevel.NORMAL)
     public void deleteEmployeeAndUser(){
         deleteUser();
         deleteEmployee();
@@ -93,7 +96,7 @@ public class UserLifecycleTests extends BaseTest {
                 .isTrue();
         addUserPage.selectUserRole();
         addUserPage.selectStatus();
-        addUserPage.inputUserInfo(uniqueFullName, uniqueUserName,AccountData.EMPLOYEEPASSWORD, AccountData.EMPLOYEEPASSWORD);
+        addUserPage.inputUserInfo(uniqueFullName, uniqueUserName, AccountData.EMPLOYEEPASSWORD, AccountData.EMPLOYEEPASSWORD);
         addUserPage.clickSaveButton();
         assertThat(addUserPage.isCreateSuccessfully())
                 .as("Create fail")

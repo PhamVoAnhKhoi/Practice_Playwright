@@ -24,6 +24,10 @@ public class ConfigReader {
         return getProperty("LOGINPAGEURL");
     }
 
+    public static String getDashboardUrl(){
+        return getProperty("DASHBOARDURL");
+    }
+
     public static String getAdminUser() {
         return getProperty("ADMINUSERNAME");
     }

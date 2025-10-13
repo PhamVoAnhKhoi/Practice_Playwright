@@ -1,7 +1,6 @@
 package tests;
 
-import base.BaseTest;
-import io.qameta.allure.Description;
+import base.AuthenticatedBaseTest;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
@@ -11,7 +10,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.UserManagementPage;
 import pages.LoginPage;
-import utils.AccountData;
 import utils.ConfigReader;
 import utils.SystemUser;
 
@@ -20,17 +18,13 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class AdminTests extends BaseTest {
+public class AdminTests extends AuthenticatedBaseTest {
     private static final Logger log = LoggerFactory.getLogger(AdminTests.class);
-    LoginPage loginPage;
     UserManagementPage userManagementPage;
 
     @BeforeMethod
     public void setUpAdminPage(){
-        loginPage = new LoginPage(page);
         userManagementPage = new UserManagementPage(page);
-        loginPage.navigateToLoginPage();
-        loginPage.loginAccount(ConfigReader.getAdminUser(),ConfigReader.getAdminPassword());
         assertThat(userManagementPage.isSidebarVisible())
                 .as("Sidebar must be visible after log in successfully")
                 .isTrue();
