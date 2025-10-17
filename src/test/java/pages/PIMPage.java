@@ -132,7 +132,6 @@ public class PIMPage {
     }
     @Step("Verify employee '{fullName}' is not visible in the table after deletion")
     public boolean isEmployeeNotVisibleInTable(String fullName) {
-        // Đảm bảo bảng hiển thị
         tableHeader.waitFor();
 
         Locator matchingRows = rows.filter(

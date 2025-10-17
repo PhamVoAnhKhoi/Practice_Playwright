@@ -148,10 +148,8 @@ public class UserManagementPage {
 
     @Step("Verify user '{username}' is not visible in table after deletion")
     public boolean isUserNotVisibleInTable(String username) {
-        // Đảm bảo bảng hiển thị
         tableHeader.waitFor();
 
-        // Dò tất cả các dòng có chứa username
         Locator matchingRows = rows.filter(
                 new Locator.FilterOptions().setHasText(username.trim())
         );
@@ -159,12 +157,10 @@ public class UserManagementPage {
         int count = matchingRows.count();
         log.info("After deletion, found {} matching rows for username '{}'", count, username);
 
-        // Trả về true nếu không có dòng nào chứa username
         return count == 0;
     }
 
     public boolean isUserPresentInTable(String username){
-        // Đảm bảo bảng đã tải xong
         rows.first().waitFor();
         Locator matchingRows = rows.filter(
                 new Locator.FilterOptions().setHasText(username.trim())
@@ -173,7 +169,6 @@ public class UserManagementPage {
         int count = matchingRows.count();
         log.info("Found " + count + " matching rows for username: " + username);
 
-        // Kiểm tra đúng 1 record
         return count == 1;
     }
 

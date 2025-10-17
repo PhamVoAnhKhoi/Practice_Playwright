@@ -118,8 +118,6 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         userManagementPage.clickAdminSideBarButton();
         userManagementPage.searchUsername(uniqueUserName);
         userManagementPage.waitForSearchResult();
-//        assertThat(userManagementPage.isUsenameVisibleInTable(uniqueUserName)).isTrue();
-//        log.info("Username is visible in table");
         assertThat(userManagementPage.isUserPresentInTable(uniqueUserName))
                 .as("User search result should return exactly one record")
                 .isTrue();
