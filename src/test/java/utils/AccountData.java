@@ -10,4 +10,7 @@ public class AccountData {
     public static final String EMPTYSTATUS = "Required";
 
     public static final String EMPLOYEEPASSWORD = "Tma@2022@T1P";
+
+    public static final String USERROLE = "Admin";
+    public static final String USERSTATUS = "Enabled";
 }

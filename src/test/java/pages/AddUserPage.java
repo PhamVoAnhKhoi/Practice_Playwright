@@ -3,41 +3,44 @@ package pages;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.TimeoutError;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import io.qameta.allure.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AddUserPage{
     private Page page;
-    private Locator addButton;
+    private Locator btnAdd;
     private Locator txtAddUser;
     private Locator ddlUserRole; //Drop down list User Role
     private Locator optionAdminUserRole;
     private Locator inputEmployeeName;
     private Locator optionEmployeeName;
+    private Locator optionSearching;
     private Locator ddlUserStatus;
     private Locator optionEnabledStatus;
     private Locator inputUsername;
     private Locator inputPassword;
     private Locator inputConfirmPassword;
-    private Locator saveButton;
+    private Locator btnSave;
     private Locator toastSuccessfully;
 
     private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
     public AddUserPage(Page page){
         this.page = page;
-        this.addButton = page.locator("//button[contains(@class,'oxd-button') and normalize-space(.)='Add']");
+        this.btnAdd = page.locator("//button[contains(@class,'oxd-button') and normalize-space(.)='Add']");
         this.txtAddUser = page.locator("//div[contains(@class,'orangehrm-card-container')]/descendant::h6[normalize-space()='Add User']");
         this.ddlUserRole = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(),'Role')]/ancestor::div[contains(@class,'oxd-input-group')]/descendant::div[contains(@class,'oxd-select-text-input')]");
         this.optionAdminUserRole = page.locator("//div[@role='option']/descendant::span[normalize-space(.)='Admin']");
         this.inputEmployeeName = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(),'Employee Name')]/ancestor::div[contains(@class,'oxd-input-group')]/descendant::input");
         this.optionEmployeeName = page.locator("//div[contains(@class,'oxd-autocomplete-dropdown')]/descendant::span");
+        this.optionSearching = page.locator("//div[contains(@class,'oxd-autocomplete-dropdown')]/descendant::div[@role='option' and normalize-space(.)='Searching....']");
         this.ddlUserStatus = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(),'Status')]/ancestor::div[contains(@class,'oxd-input-group')]/descendant::div[contains(@class,'oxd-select-text-input')]");
         this.optionEnabledStatus = page.locator("//div[@role='option']/descendant::span[normalize-space(.)='Enabled']");
         this.inputUsername = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(),'Username')]/ancestor::div[contains(@class,'oxd-input-group')]/descendant::input");
         this.inputPassword = page.locator("//label[contains(@class,'oxd-label') and normalize-space(text())='Password']/ancestor::div[contains(@class,'oxd-input-group')]/descendant::input");
         this.inputConfirmPassword = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(),'Confirm Password')]/ancestor::div[contains(@class,'oxd-input-group')]/descendant::input");
-        this.saveButton = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[normalize-space(.)='Save']");
+        this.btnSave = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[normalize-space(.)='Save']");
         this.toastSuccessfully = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'Successfully')]");
 
     }
@@ -45,8 +48,8 @@ public class AddUserPage{
     //Add user
     @Step("Click Add button")
     public void clickAddButton(){
-        addButton.waitFor();
-        addButton.click();
+        btnAdd.waitFor();
+        btnAdd.click();
     }
 
     @Step("Add user form visible")
@@ -67,12 +70,17 @@ public class AddUserPage{
         optionAdminUserRole.click();
     }
 
-    @Step("Input Fullname: {fullName}, User: {userName}, Password:{passWord}, Confirm password:{confirmPassword}")
-    public void inputUserInfo(String fullName, String userName, String passWord, String confirmPassword ){
+    @Step("Input user information")
+    public void inputUserInfo(String inputName, String fullName,String userName, String passWord, String confirmPassword ){
         inputEmployeeName.waitFor();
-        inputEmployeeName.fill(fullName);
-        optionEmployeeName.waitFor();
-        optionEmployeeName.click();
+        inputEmployeeName.fill(inputName);
+        page.waitForSelector("//div[contains(@class,'oxd-autocomplete-dropdown')]",
+                new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
+
+        Locator matchingOption = optionEmployeeName.filter(
+                new Locator.FilterOptions().setHasText(fullName.trim())
+        );
+        matchingOption.first().click();
         inputUsername.waitFor();
         inputUsername.fill(userName);
         inputPassword.fill(passWord);
@@ -87,7 +95,7 @@ public class AddUserPage{
     }
     @Step("Click Save button")
     public void clickSaveButton(){
-        saveButton.click();
+        btnSave.click();
     }
 
     @Step("Create Successfully")

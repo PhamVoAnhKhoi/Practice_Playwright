@@ -13,9 +13,9 @@ import java.util.List;
 public class LoginPage {
     private Page page;
 
-    private Locator userName;
-    private Locator passWord;
-    private Locator loginButton;
+    private Locator inputUsername;
+    private Locator inputPassword;
+    private Locator btnLogin;
     private Locator invalidError;
     private Locator requiredMessage;
     private Locator profileUser;
@@ -27,9 +27,9 @@ public class LoginPage {
     //Constructor LoginPage
     public LoginPage(Page page) {
         this.page = page;
-        this.userName = page.locator("input[name='username']");
-        this.passWord = page.locator("input[name='password']");
-        this.loginButton = page.locator("button[type='submit']");
+        this.inputUsername = page.locator("input[name='username']");
+        this.inputPassword = page.locator("input[name='password']");
+        this.btnLogin = page.locator("button[type='submit']");
         this.invalidError = page.locator("text=Invalid credentials");
         this.requiredMessage = page.locator("text=Required");
         this.profileUser = page.locator("li[class='oxd-userdropdown']");
@@ -39,15 +39,15 @@ public class LoginPage {
     @Step("Navigate to Login page.")
     public void navigateToLoginPage(){
         page.navigate(ConfigReader.getLoginPageUrl());
-        loginButton.waitFor();
+        btnLogin.waitFor();
     }
 
     //Enter Account
     @Step("Login with username: {username}, password: {password}")
     public void loginAccount(String username, String password){
-        userName.fill(username);
-        passWord.fill(password);
-        loginButton.click();
+        inputUsername.fill(username);
+        inputPassword.fill(password);
+        btnLogin.click();
     }
 
     //Verify Login status

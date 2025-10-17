@@ -9,17 +9,21 @@ import org.slf4j.LoggerFactory;
 
 public class PIMPage {
     private Page page;
-    private Locator pimSBButon;
-    private Locator employeeListTBButton;
-    private Locator employeeNameInput;
-    private Locator optionSearchNameInput;
-    private Locator optionSearchingInput;
-    private Locator searchButton;
-    private Locator iconDeleteButton;
-    private Locator confirmDeleteButton;
+    private Locator btnPIMSB;
+    private Locator btnEmployeeListTB;
+    private Locator btnAddEmployeeTB;
+    private Locator inputEmployeeName;
+    private Locator optionSearchName;
+    private Locator optionSearching;
+    private Locator btnSearch;
+    private Locator btnIconDelete;
+    private Locator btnConfirmDelete;
     private Locator loadSpinnerTable;
     private Locator toastSuccessfully;
     private Locator toastNoRecordFound;
+    private Locator rows;
+    private Locator tableHeader;
+
 
 
 
@@ -27,49 +31,59 @@ public class PIMPage {
 
     public PIMPage(Page page){
         this.page =page;
-        this.pimSBButon = page.locator("//a[contains(@class,'oxd-main-menu')]/descendant::span[normalize-space(.)='PIM']");
-        this.employeeListTBButton = page.locator("//li[contains(@class,'oxd-topbar-body')]/descendant::a[normalize-space(text())='Employee List']");
-        this.employeeNameInput = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(text()),'Employee Name')]/ancestor::div[contains(@class,'oxd-grid-item')]/descendant::input");
-        this.optionSearchNameInput = page.locator("//div[contains(@class,'oxd-autocomplete-dropdown')]/descendant::div[@role='option']");
-        this.optionSearchingInput = page.locator("//div[contains(@class,'oxd-autocomplete-dropdown')]/descendant::div[@role='option' and normalize-space(.)='Searching....']");
-        this.searchButton = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[contains(@class,'oxd-button') and normalize-space(.)='Search']");
-        this.iconDeleteButton = page.locator("//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
-        this.confirmDeleteButton = page.locator("//div[contains(@class,'oxd-sheet')]/descendant::button[contains(@class,'oxd-button') and contains(normalize-space(.),'Yes')]");
+        this.btnPIMSB = page.locator("//a[contains(@class,'oxd-main-menu')]/descendant::span[normalize-space(.)='PIM']");
+        this.btnEmployeeListTB = page.locator("//li[contains(@class,'oxd-topbar-body')]/descendant::a[normalize-space(text())='Employee List']");
+        this.btnAddEmployeeTB = page.locator("//li[contains(@class,'oxd-topbar-body')]/descendant::a[normalize-space(text())='Add Employee']");
+        this.inputEmployeeName = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(text()),'Employee Name')]/ancestor::div[contains(@class,'oxd-grid-item')]/descendant::input");
+        this.optionSearchName = page.locator("//div[contains(@class,'oxd-autocomplete-dropdown')]/descendant::div[@role='option']");
+        this.optionSearching = page.locator("//div[contains(@class,'oxd-autocomplete-dropdown')]/descendant::div[@role='option' and normalize-space(.)='Searching....']");
+        this.btnSearch = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[contains(@class,'oxd-button') and normalize-space(.)='Search']");
+        this.btnIconDelete = page.locator("//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
+        this.btnConfirmDelete = page.locator("//div[contains(@class,'oxd-sheet')]/descendant::button[contains(@class,'oxd-button') and contains(normalize-space(.),'Yes')]");
         this.loadSpinnerTable = page.locator("//div[contains(@class,'oxd-table-loader')]/descendant::div[@class='oxd-loading-spinner']");
         this.toastSuccessfully = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'Successfully')]");
         this.toastNoRecordFound = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'No Records Found')]");
+        this.rows = page.locator("//div[contains(@class,'oxd-table-body')]/descendant::div[contains(@class,'oxd-table-row')]");
+        this.tableHeader = page.locator("//div[contains(@class,'oxd-table-header') and @role='rowgroup']");
+
+    }
+
+    @Step("Click Add Employee button on topbar in PIM")
+    public void navigateToAddEmployeePage(){
+        btnAddEmployeeTB.waitFor();
+        btnAddEmployeeTB.click();
     }
 
     @Step("Click EmployeeList button ")
     public void navigateToEmployeeListPage(){
-        employeeListTBButton.waitFor();
-        employeeListTBButton.click();
+        btnEmployeeListTB.waitFor();
+        btnEmployeeListTB.click();
     }
 
     @Step("Click PIM button on sidebar")
     public void clickPIMSideBarButton(){
-        pimSBButon.waitFor();
-        pimSBButon.click();
+        btnPIMSB.waitFor();
+        btnPIMSB.click();
     }
 
     @Step("Search employee by Firstname")
     public void searchEmployeeByFirstname(String firstName, String fullName){
-        employeeNameInput.waitFor();
-        employeeNameInput.fill(firstName);
-        optionSearchNameInput.waitFor();
-        optionSearchingInput.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
+        inputEmployeeName.waitFor();
+        inputEmployeeName.fill(firstName);
+        optionSearchName.waitFor();
+        optionSearching.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
 
 
-        String fullname = optionSearchNameInput.innerText();
+        String fullname = optionSearchName.innerText();
 
         log.info("Result search fullname: " + fullname);
         log.info("Unique Fullname: " + fullName);
         if(fullname.equals(fullName)){
-            optionSearchNameInput.click();
-            searchButton.click();
+            optionSearchName.click();
+            btnSearch.click();
         }
         else{
-            searchButton.click();
+            btnSearch.click();
         }
     }
 
@@ -82,15 +96,17 @@ public class PIMPage {
             log.info("Spinner not visible - skipping wait for visible state.");
         }
         loadSpinnerTable.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
+        tableHeader.waitFor();
         log.info("[Employee]Loading spinner has disappeared. Table is now stable.");
     }
 
     @Step("Delete employee")
     public void deleteEmployee(){
-        iconDeleteButton.waitFor();
-        iconDeleteButton.click();
-        confirmDeleteButton.waitFor();
-        confirmDeleteButton.click();
+        tableHeader.waitFor();
+        btnIconDelete.waitFor();
+        btnIconDelete.click();
+        btnConfirmDelete.waitFor();
+        btnConfirmDelete.click();
     }
 
     @Step("Check employee is deleted Successfully")
@@ -113,5 +129,19 @@ public class PIMPage {
         catch(Exception e){
             return false;
         }
+    }
+    @Step("Verify employee '{fullName}' is not visible in the table after deletion")
+    public boolean isEmployeeNotVisibleInTable(String fullName) {
+        // Đảm bảo bảng hiển thị
+        tableHeader.waitFor();
+
+        Locator matchingRows = rows.filter(
+                new Locator.FilterOptions().setHasText(fullName.trim())
+        );
+
+        int count = matchingRows.count();
+        log.info("After deletion, found {} matching rows for employee '{}'", count, fullName);
+
+        return count == 0;
     }
 }

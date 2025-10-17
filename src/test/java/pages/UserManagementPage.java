@@ -15,84 +15,70 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 
 
 public class UserManagementPage {
-
-
     private Page page;
     private Locator sideBar;
-    private Locator adminSBButton; //Xpath Axes
+    private Locator btnAdminSB; //Xpath Axes
     private Locator rows;
     private Locator headerTitle;
     private Locator tableHeader;//table header
     private Locator inputUsername;
-    private Locator searchButton;
-    private Locator iconDeleteButton;
-    private Locator confirmDeleteButton;
+    private Locator btnSearch;
+    private Locator btnIconDelete;
+    private Locator btnConfirmDelete;
     private Locator toastSuccessfully;
     private Locator toastNoRecordFound;
     private Locator userNameTable;
     private Locator loadSpinnerTable;
+    private Locator btnJobTB;
 
     private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
 
     public UserManagementPage(Page page){
         this.page = page;
         this.sideBar = page.locator("nav[class='oxd-navbar-nav']");
-        this.adminSBButton = page.locator("//a[contains(@class,'oxd-main-menu')]/descendant::span[normalize-space(.)='Admin']");
+        this.btnAdminSB = page.locator("//a[contains(@class,'oxd-main-menu')]/descendant::span[normalize-space(.)='Admin']");
         this.headerTitle = page.locator("//div[contains(@class,'oxd-topbar-header-title')]/descendant::h6[normalize-space(.)='Admin']");
         this.rows = page.locator("//div[contains(@class,'oxd-table-body')]/descendant::div[contains(@class,'oxd-table-row')]");
         this.tableHeader = page.locator("//div[contains(@class,'oxd-table-header') and @role='rowgroup']");
         this.inputUsername = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(text()),'Username')]/parent::div/following-sibling::div/input");
-        this.searchButton = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[contains(@class,'oxd-button') and normalize-space(.)='Search']");
-        this.iconDeleteButton = page.locator("//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
-        this.confirmDeleteButton = page.locator("//div[contains(@class,'oxd-sheet')]/descendant::button[contains(@class,'oxd-button') and contains(normalize-space(.),'Yes')]");
+        this.btnSearch = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[contains(@class,'oxd-button') and normalize-space(.)='Search']");
+        this.btnIconDelete = page.locator("//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
+        this.btnConfirmDelete = page.locator("//div[contains(@class,'oxd-sheet')]/descendant::button[contains(@class,'oxd-button') and contains(normalize-space(.),'Yes')]");
         this.toastSuccessfully = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'Successfully')]");
         this.toastNoRecordFound = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'No Records Found')]");
         this.userNameTable = page.locator("//div[contains(@class,'oxd-table-card-cell-checkbox')]/ancestor::div[contains(@class,'oxd-table-cell')]/following-sibling::div[1]/div");
         this.loadSpinnerTable = page.locator("//div[contains(@class,'oxd-table-loader')]/descendant::div[@class='oxd-loading-spinner']");
+        this.btnJobTB = page.locator("//li[contains(@class,'oxd-topbar-body')]/descendant::span[normalize-space(text())='Job']");
     }
 
-    public List<SystemUser> getTableColData(){
+    @Step("Get all users from the table")
+    public List<SystemUser> getUsers() {
         tableHeader.waitFor();
-        List<String> headerTexts = tableHeader.locator("xpath=.//div[contains(@class,'oxd-table-header-cell')]").allInnerTexts();
-        Map<String, Integer> headerIndexMap = new HashMap<>();
-        for (int i = 0; i < headerTexts.size(); i++) {
-            headerIndexMap.put(headerTexts.get(i).trim(), i);
-        }
-        log.info("Header mapping: " + headerIndexMap);
 
-        int rowCount = rows.count();
+        Map<String, Integer> headerIndexMap = getHeaderIndexMap();
         List<SystemUser> users = new ArrayList<>();
 
-        for (int i = 0; i < rowCount; i++) {
-            Locator row = rows.nth(i);
-            List<String> cells = row.locator("xpath=.//div[contains(@class,'oxd-table-cell')]").allInnerTexts();
-
-            String username = cells.get(headerIndexMap.get("Username")).trim();
-            String role = cells.get(headerIndexMap.get("User Role")).trim();
-            String employeeName = cells.get(headerIndexMap.get("Employee Name")).trim();
-            String status = cells.get(headerIndexMap.get("Status")).trim();
-
-            users.add(new SystemUser(username, role, employeeName, status));
+        for (Locator row : getAllRows()) {
+            users.add(extractUserFromRow(row, headerIndexMap));
         }
 
-        // Log kết quả
-        for (SystemUser user : users) {
-            log.info(user.toString());
-        }
+        log.info("Total users found: {}", users.size());
         return users;
     }
+
+
 
     @Step("Click Admin button on sidebar")
     public void clickAdminSideBarButton(){
         sideBar.waitFor();
-        adminSBButton.click();
+        btnAdminSB.click();
     }
 
     @Step("Sidebar is visible")
     public boolean isSidebarVisible(){
         try{
-            adminSBButton.waitFor();
-            return adminSBButton.isVisible();
+            btnAdminSB.waitFor();
+            return btnAdminSB.isVisible();
         }
         catch(TimeoutError e){
             return false;
@@ -113,7 +99,7 @@ public class UserManagementPage {
     @Step("Search user by Username")
     public void searchUsername(String userName){
         inputUsername.fill(userName);
-        searchButton.click();
+        btnSearch.click();
     }
 
     @Step("Wait for search results to load")
@@ -125,15 +111,17 @@ public class UserManagementPage {
             log.info("Spinner not visible - skipping wait for visible state.");
         }
         loadSpinnerTable.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
+        tableHeader.waitFor();
         log.info("[User]Loading spinner has disappeared. Table is now stable.");
     }
 
     @Step("Delete user on table")
     public void deleteUser(){
-        iconDeleteButton.waitFor();
-        iconDeleteButton.click();
-        confirmDeleteButton.waitFor();
-        confirmDeleteButton.click();
+        tableHeader.waitFor();
+        btnIconDelete.waitFor();
+        btnIconDelete.click();
+        btnConfirmDelete.waitFor();
+        btnConfirmDelete.click();
     }
 
     @Step("Delete Successfully")
@@ -158,23 +146,103 @@ public class UserManagementPage {
         }
     }
 
-    @Step("Check username visible in table")
-    public boolean isUsenameVisibleInTable(String userName){
-        try{
-            userNameTable.waitFor();
-            String username = userNameTable.innerText();
-            log.info("Username is visible in table: " + username);
-            log.info("Unique Username: " + userName);
-            if (username.equals(userName)){
-                log.info("Username in table is correct");
-                return userNameTable.isVisible();
-            }
-            else {
-                return false;
-            }
-        }
-        catch(Exception e){
-            return false;
-        }
+    @Step("Verify user '{username}' is not visible in table after deletion")
+    public boolean isUserNotVisibleInTable(String username) {
+        // Đảm bảo bảng hiển thị
+        tableHeader.waitFor();
+
+        // Dò tất cả các dòng có chứa username
+        Locator matchingRows = rows.filter(
+                new Locator.FilterOptions().setHasText(username.trim())
+        );
+
+        int count = matchingRows.count();
+        log.info("After deletion, found {} matching rows for username '{}'", count, username);
+
+        // Trả về true nếu không có dòng nào chứa username
+        return count == 0;
     }
+
+    public boolean isUserPresentInTable(String username){
+        // Đảm bảo bảng đã tải xong
+        rows.first().waitFor();
+        Locator matchingRows = rows.filter(
+                new Locator.FilterOptions().setHasText(username.trim())
+        );
+
+        int count = matchingRows.count();
+        log.info("Found " + count + " matching rows for username: " + username);
+
+        // Kiểm tra đúng 1 record
+        return count == 1;
+    }
+
+    @Step("Get user details from table by username")
+    public SystemUser getUserDetailsFromTable(String username) {
+        rows.first().waitFor();
+
+        Map<String, Integer> headerIndexMap = getHeaderIndexMap();
+
+        Locator matchedRow = rows.filter(
+                new Locator.FilterOptions().setHasText(username.trim())
+        ).first();
+
+        matchedRow.waitFor();
+
+        SystemUser user = extractUserFromRow(matchedRow,headerIndexMap);
+        log.info("Extracted user details from table: {}", user);
+
+        return user;
+    }
+
+
+    public void clickJobDropdownTB(){
+        btnJobTB.waitFor();
+        btnJobTB.click();
+    }
+
+
+    private Map<String, Integer> getHeaderIndexMap() {
+        List<String> headerTexts = tableHeader
+                .locator("xpath=.//div[contains(@class,'oxd-table-header-cell')]")
+                .allInnerTexts();
+
+        Map<String, Integer> headerIndexMap = new HashMap<>();
+        for (int i = 0; i < headerTexts.size(); i++) {
+            headerIndexMap.put(headerTexts.get(i).trim(), i);
+        }
+
+        log.info("Header mapping: {}", headerIndexMap);
+        return headerIndexMap;
+    }
+
+    private List<Locator> getAllRows() {
+        int rowCount = rows.count();
+        List<Locator> rowList = new ArrayList<>();
+        for (int i = 0; i < rowCount; i++) {
+            rowList.add(rows.nth(i));
+        }
+        return rowList;
+    }
+
+    private SystemUser extractUserFromRow(Locator row, Map<String, Integer> headerIndexMap) {
+        List<String> cells = row.locator("xpath=.//div[contains(@class,'oxd-table-cell')]").allInnerTexts();
+
+        String username = getCellText(cells, headerIndexMap, "Username");
+        String role = getCellText(cells, headerIndexMap, "User Role");
+        String employeeName = getCellText(cells, headerIndexMap, "Employee Name");
+        String status = getCellText(cells, headerIndexMap, "Status");
+
+        return new SystemUser(username, role, employeeName, status);
+    }
+
+    private String getCellText(List<String> cells, Map<String, Integer> headerMap, String key) {
+        Integer index = headerMap.get(key);
+        if (index == null || index >= cells.size()) {
+            log.warn("Column '{}' not found or out of range in table row.", key);
+            return "";
+        }
+        return cells.get(index).trim();
+    }
+
 }

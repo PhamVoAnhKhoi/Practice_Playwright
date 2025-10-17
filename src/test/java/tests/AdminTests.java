@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.UserManagementPage;
-import pages.LoginPage;
-import utils.ConfigReader;
 import utils.SystemUser;
 
 import java.util.List;
@@ -38,7 +36,8 @@ public class AdminTests extends AuthenticatedBaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Story("User managerment table")
     public void takeDataFromTable(){
-        List<SystemUser> users = userManagementPage.getTableColData();
+        List<SystemUser> users;
+        users = userManagementPage.getUsers();
         assertThat(users).isNotEmpty();
 
         SystemUser firstUser = users.get(0);

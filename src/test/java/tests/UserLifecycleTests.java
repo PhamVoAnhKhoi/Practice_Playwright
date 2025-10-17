@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 import pages.*;
 import utils.AccountData;
 import utils.DataHelper;
+import utils.SystemUser;
 //import utils.AccountData;
 //import utils.ConfigReader;
 //import utils.DataHelper;
@@ -19,12 +20,13 @@ import utils.DataHelper;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class UserLifecycleTests extends AuthenticatedBaseTest {
-    private static final Logger log = LoggerFactory.getLogger(LoginTests.class);
+    private static final Logger log = LoggerFactory.getLogger(UserLifecycleTests.class);
     AddEmployeePage addEmployeePage;
     PIMPage pimPage;
     UserManagementPage userManagementPage;
     AddUserPage addUserPage;
     String uniqueFirstName;
+    String uniqueMiddleName;
     String uniqueLastName;
     String uniqueFullName;
     String uniqueUserName;
@@ -37,8 +39,16 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         log.info("FirstName: " + uniqueFirstName);
         uniqueLastName = DataHelper.generateUniqueLastName();
         log.info("LastName: " + uniqueLastName);
-        uniqueFullName = uniqueFirstName + "  " + uniqueLastName;
-        log.info("FullName: " + uniqueFullName);
+        uniqueMiddleName = DataHelper.generateUniqueMiddleName();
+        log.info("MiddleName: " + uniqueMiddleName);
+        if(uniqueMiddleName == null){
+            uniqueFullName = uniqueFirstName + " " + " "+ uniqueLastName;
+            log.info("FullName: " + uniqueFullName);
+        }
+        else {
+            uniqueFullName = uniqueFirstName + " " + uniqueMiddleName + " " + uniqueLastName;
+            log.info("FullName: " + uniqueFullName);
+        }
         uniqueUserName = DataHelper.generateUniqueUsername();
         log.info("Unique: " + uniqueUserName);
         uniqueUserId = DataHelper.generateRandomUserId(5);
@@ -72,8 +82,8 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
     private void createEmployee(){
         log.info("======== Create Employee ========");
         pimPage.clickPIMSideBarButton();
-        addEmployeePage.navigateToAddEmployeePage();
-        addEmployeePage.addEmployee(uniqueFirstName,uniqueLastName,uniqueUserId);
+        pimPage.navigateToAddEmployeePage();
+        addEmployeePage.addEmployee(uniqueFirstName,uniqueMiddleName,uniqueLastName,uniqueUserId);
         //addEmployeePage.clickCreateLoginDetailsButton();
         //addEmployeePage.addDetailsUser(uniqueUserName, AccountData.EMPLOYEEPASSWORD, AccountData.EMPLOYEEPASSWORD);
         addEmployeePage.clickSaveButton();
@@ -96,7 +106,7 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
                 .isTrue();
         addUserPage.selectUserRole();
         addUserPage.selectStatus();
-        addUserPage.inputUserInfo(uniqueFullName, uniqueUserName, AccountData.EMPLOYEEPASSWORD, AccountData.EMPLOYEEPASSWORD);
+        addUserPage.inputUserInfo(uniqueFirstName, uniqueFullName,uniqueUserName, AccountData.EMPLOYEEPASSWORD, AccountData.EMPLOYEEPASSWORD);
         addUserPage.clickSaveButton();
         assertThat(addUserPage.isCreateSuccessfully())
                 .as("Create fail")
@@ -108,8 +118,17 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         userManagementPage.clickAdminSideBarButton();
         userManagementPage.searchUsername(uniqueUserName);
         userManagementPage.waitForSearchResult();
-        assertThat(userManagementPage.isUsenameVisibleInTable(uniqueUserName)).isTrue();
-        log.info("Username is visible in table");
+//        assertThat(userManagementPage.isUsenameVisibleInTable(uniqueUserName)).isTrue();
+//        log.info("Username is visible in table");
+        assertThat(userManagementPage.isUserPresentInTable(uniqueUserName))
+                .as("User search result should return exactly one record")
+                .isTrue();
+
+        SystemUser actualUser = userManagementPage.getUserDetailsFromTable(uniqueUserName);
+        assertThat(actualUser).as("User must exist in table").isNotNull();
+        assertThat(actualUser.getUserRole()).isEqualTo(AccountData.USERROLE); // ví dụ
+        assertThat(actualUser.getStatus()).isEqualTo(AccountData.USERSTATUS); // ví dụ
+        log.info("Verified user details: " + actualUser);
     }
 
     private void deleteUser(){
@@ -125,11 +144,16 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
 
         log.info("======== Check user ========");
         userManagementPage.searchUsername(uniqueUserName);
+
         assertThat(userManagementPage.isUsernameInvisibleAfterDelete())
                 .as("Notification No Record Found must be visible")
                 .isTrue();
-        log.info("No record is found");
+        userManagementPage.waitForSearchResult();
+        assertThat(userManagementPage.isUserNotVisibleInTable(uniqueUserName))
+                .as("User should not be visible in table after deletion")
+                .isTrue();
 
+        log.info("No record is found");
     }
 
     private void deleteEmployee(){
@@ -146,10 +170,15 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
 
         log.info("======== Check employee ========");
         pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueFullName);
+
         assertThat(pimPage.isEmployeeInvisibleAfterDelete())
                 .as("Notification No Record Found must be visible")
                 .isTrue();
+        pimPage.waitForSearchResult();
+        assertThat(pimPage.isEmployeeNotVisibleInTable(uniqueFullName))
+                .as("Employee should not be visible in table after deletion")
+                .isTrue();
+
         log.info("No record is found");
     }
-
 }
