@@ -16,7 +16,7 @@ public class PIMPage {
     private Locator optionSearchName;
     private Locator optionSearching;
     private Locator btnSearch;
-    private Locator btnIconDelete;
+    private Locator btnDelete;
     private Locator btnConfirmDelete;
     private Locator loadSpinnerTable;
     private Locator toastSuccessfully;
@@ -38,7 +38,6 @@ public class PIMPage {
         this.optionSearchName = page.locator("//div[contains(@class,'oxd-autocomplete-dropdown')]/descendant::div[@role='option']");
         this.optionSearching = page.locator("//div[contains(@class,'oxd-autocomplete-dropdown')]/descendant::div[@role='option' and normalize-space(.)='Searching....']");
         this.btnSearch = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[contains(@class,'oxd-button') and normalize-space(.)='Search']");
-        this.btnIconDelete = page.locator("//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
         this.btnConfirmDelete = page.locator("//div[contains(@class,'oxd-sheet')]/descendant::button[contains(@class,'oxd-button') and contains(normalize-space(.),'Yes')]");
         this.loadSpinnerTable = page.locator("//div[contains(@class,'oxd-table-loader')]/descendant::div[@class='oxd-loading-spinner']");
         this.toastSuccessfully = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'Successfully')]");
@@ -101,10 +100,12 @@ public class PIMPage {
     }
 
     @Step("Delete employee")
-    public void deleteEmployee(){
+    public void deleteEmployee(String userId){
         tableHeader.waitFor();
-        btnIconDelete.waitFor();
-        btnIconDelete.click();
+        Locator targetRow = rows.filter(new Locator.FilterOptions().setHasText(userId.trim())).first();
+        targetRow.waitFor();
+        btnDelete = targetRow.locator("xpath=.//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
+        btnDelete.click();
         btnConfirmDelete.waitFor();
         btnConfirmDelete.click();
     }

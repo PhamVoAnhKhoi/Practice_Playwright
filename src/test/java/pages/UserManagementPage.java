@@ -20,16 +20,15 @@ public class UserManagementPage {
     private Locator btnAdminSB; //Xpath Axes
     private Locator rows;
     private Locator headerTitle;
-    private Locator tableHeader;//table header
+    private Locator tableHeader;
     private Locator inputUsername;
     private Locator btnSearch;
-    private Locator btnIconDelete;
     private Locator btnConfirmDelete;
     private Locator toastSuccessfully;
     private Locator toastNoRecordFound;
     private Locator userNameTable;
     private Locator loadSpinnerTable;
-    private Locator btnJobTB;
+    private Locator btnDelete;
 
     private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
 
@@ -42,13 +41,12 @@ public class UserManagementPage {
         this.tableHeader = page.locator("//div[contains(@class,'oxd-table-header') and @role='rowgroup']");
         this.inputUsername = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(text()),'Username')]/parent::div/following-sibling::div/input");
         this.btnSearch = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[contains(@class,'oxd-button') and normalize-space(.)='Search']");
-        this.btnIconDelete = page.locator("//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
         this.btnConfirmDelete = page.locator("//div[contains(@class,'oxd-sheet')]/descendant::button[contains(@class,'oxd-button') and contains(normalize-space(.),'Yes')]");
         this.toastSuccessfully = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'Successfully')]");
         this.toastNoRecordFound = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'No Records Found')]");
         this.userNameTable = page.locator("//div[contains(@class,'oxd-table-card-cell-checkbox')]/ancestor::div[contains(@class,'oxd-table-cell')]/following-sibling::div[1]/div");
         this.loadSpinnerTable = page.locator("//div[contains(@class,'oxd-table-loader')]/descendant::div[@class='oxd-loading-spinner']");
-        this.btnJobTB = page.locator("//li[contains(@class,'oxd-topbar-body')]/descendant::span[normalize-space(text())='Job']");
+
     }
 
     @Step("Get all users from the table")
@@ -116,13 +114,17 @@ public class UserManagementPage {
     }
 
     @Step("Delete user on table")
-    public void deleteUser(){
+    public void deleteUser(String username){
         tableHeader.waitFor();
-        btnIconDelete.waitFor();
-        btnIconDelete.click();
+        Locator targetRow = rows.filter(new Locator.FilterOptions().setHasText(username.trim())).first();
+        targetRow.waitFor();
+        btnDelete = targetRow.locator("xpath=.//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
+        btnDelete.click();
         btnConfirmDelete.waitFor();
         btnConfirmDelete.click();
     }
+
+
 
     @Step("Delete Successfully")
     public boolean isDeleteSuccessfully(){
@@ -160,6 +162,7 @@ public class UserManagementPage {
         return count == 0;
     }
 
+    @Step("Check user present in table")
     public boolean isUserPresentInTable(String username){
         rows.first().waitFor();
         Locator matchingRows = rows.filter(
@@ -189,13 +192,6 @@ public class UserManagementPage {
 
         return user;
     }
-
-
-    public void clickJobDropdownTB(){
-        btnJobTB.waitFor();
-        btnJobTB.click();
-    }
-
 
     private Map<String, Integer> getHeaderIndexMap() {
         List<String> headerTexts = tableHeader

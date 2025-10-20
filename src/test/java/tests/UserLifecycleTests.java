@@ -13,6 +13,7 @@ import pages.*;
 import utils.AccountData;
 import utils.DataHelper;
 import utils.SystemUser;
+import utils.TestDataContext;
 //import utils.AccountData;
 //import utils.ConfigReader;
 //import utils.DataHelper;
@@ -33,26 +34,10 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
     String uniqueUserId;
 
     @BeforeClass
-    public void generateAccount(){
+    public void prepareTestData(){
         log.info("======== Generate unique data for User ========");
-        uniqueFirstName = DataHelper.generateUniqueFirstName();
-        log.info("FirstName: " + uniqueFirstName);
-        uniqueLastName = DataHelper.generateUniqueLastName();
-        log.info("LastName: " + uniqueLastName);
-        uniqueMiddleName = DataHelper.generateUniqueMiddleName();
-        log.info("MiddleName: " + uniqueMiddleName);
-        if(uniqueMiddleName == null){
-            uniqueFullName = uniqueFirstName + " " + " "+ uniqueLastName;
-            log.info("FullName: " + uniqueFullName);
-        }
-        else {
-            uniqueFullName = uniqueFirstName + " " + uniqueMiddleName + " " + uniqueLastName;
-            log.info("FullName: " + uniqueFullName);
-        }
-        uniqueUserName = DataHelper.generateUniqueUsername();
-        log.info("Unique: " + uniqueUserName);
-        uniqueUserId = DataHelper.generateRandomUserId(5);
-        log.info("Id: " +uniqueUserId);
+        createUniqueData();
+        saveUniqueData(); //Save to shared context
     }
 
     @BeforeMethod
@@ -68,6 +53,7 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
     public void createEmployeeAndUser(){
         createEmployee();
         createUser();
+        verifyCreateUserSuccess();
     }
 
     @Test(description = "Test flow: Delete Empolyee & User",
@@ -76,7 +62,35 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
     @Severity(SeverityLevel.NORMAL)
     public void deleteEmployeeAndUser(){
         deleteUser();
+        verifyDeleteUserSuccess();
         deleteEmployee();
+        verifyDeleteEmployeeSuccess();
+    }
+
+    private void createUniqueData(){
+        uniqueFirstName = DataHelper.generateUniqueFirstName();
+        uniqueLastName = DataHelper.generateUniqueLastName();
+        uniqueMiddleName = DataHelper.generateUniqueMiddleName();
+        if(uniqueMiddleName == null){
+            uniqueFullName = uniqueFirstName + " " + " "+ uniqueLastName;
+        }
+        else {
+            uniqueFullName = uniqueFirstName + " " + uniqueMiddleName + " " + uniqueLastName;
+        }
+        uniqueUserName = DataHelper.generateUniqueUsername();
+        uniqueUserId = DataHelper.generateRandomUserId(5);
+    }
+
+    private void saveUniqueData(){
+        TestDataContext data = TestDataContext.getInstance();
+        data.setUniqueFirstName(uniqueFirstName);
+        data.setUniqueMiddleName(uniqueMiddleName);
+        data.setUniqueLastName(uniqueLastName);
+        data.setUniqueFullName(uniqueFullName);
+        data.setUniqueUserName(uniqueUserName);
+        data.setUniqueUserId(uniqueUserId);
+
+        log.info("Saved unique user data into TestDataContext.");
     }
 
     private void createEmployee(){
@@ -112,7 +126,9 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
                 .as("Create fail")
                 .isTrue();
         log.info("Create Successfully");
+    }
 
+    private void verifyCreateUserSuccess(){
         //check user is visible
         log.info("======== Check user is visible in table ========");
         userManagementPage.clickAdminSideBarButton();
@@ -134,7 +150,10 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         userManagementPage.clickAdminSideBarButton();
         userManagementPage.searchUsername(uniqueUserName);
         userManagementPage.waitForSearchResult();
-        userManagementPage.deleteUser();
+        userManagementPage.deleteUser(uniqueUserName);
+    }
+
+    private void verifyDeleteUserSuccess(){
         assertThat(userManagementPage.isDeleteSuccessfully())
                 .as("Delete fail")
                 .isTrue();
@@ -160,7 +179,10 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         pimPage.navigateToEmployeeListPage();
         pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueFullName);
         pimPage.waitForSearchResult();
-        pimPage.deleteEmployee();
+        pimPage.deleteEmployee(uniqueUserId);
+    }
+
+    private void verifyDeleteEmployeeSuccess(){
         assertThat(pimPage.isDeleteSuccessfully())
                 .as("Delete fail")
                 .isTrue();
