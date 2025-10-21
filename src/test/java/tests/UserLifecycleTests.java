@@ -13,10 +13,6 @@ import pages.*;
 import utils.AccountData;
 import utils.DataHelper;
 import utils.SystemUser;
-import utils.TestDataContext;
-//import utils.AccountData;
-//import utils.ConfigReader;
-//import utils.DataHelper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -37,7 +33,6 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
     public void prepareTestData(){
         log.info("======== Generate unique data for User ========");
         createUniqueData();
-        saveUniqueData(); //Save to shared context
     }
 
     @BeforeMethod
@@ -69,7 +64,9 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
 
     private void createUniqueData(){
         uniqueFirstName = DataHelper.generateUniqueFirstName();
+        log.info("FirstName: " + uniqueFirstName);
         uniqueLastName = DataHelper.generateUniqueLastName();
+        log.info("LastName: " + uniqueLastName);
         uniqueMiddleName = DataHelper.generateUniqueMiddleName();
         if(uniqueMiddleName == null){
             uniqueFullName = uniqueFirstName + " " + " "+ uniqueLastName;
@@ -77,20 +74,11 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         else {
             uniqueFullName = uniqueFirstName + " " + uniqueMiddleName + " " + uniqueLastName;
         }
+        log.info("FullName: " + uniqueFullName);
         uniqueUserName = DataHelper.generateUniqueUsername();
+        log.info("UserName: " + uniqueUserName);
         uniqueUserId = DataHelper.generateRandomUserId(5);
-    }
-
-    private void saveUniqueData(){
-        TestDataContext data = TestDataContext.getInstance();
-        data.setUniqueFirstName(uniqueFirstName);
-        data.setUniqueMiddleName(uniqueMiddleName);
-        data.setUniqueLastName(uniqueLastName);
-        data.setUniqueFullName(uniqueFullName);
-        data.setUniqueUserName(uniqueUserName);
-        data.setUniqueUserId(uniqueUserId);
-
-        log.info("Saved unique user data into TestDataContext.");
+        log.info("Id: " + uniqueUserId);
     }
 
     private void createEmployee(){

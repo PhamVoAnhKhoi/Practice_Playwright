@@ -47,4 +47,16 @@ public class DataHelper {
     public static String generateUniqueMiddleName(){
         return "Middle_" + getTimestamp();
     }
+
+    public static String generateUniqueEmail(){
+        return  "Email" + getTimestamp() + "@gmail.com";
+    }
+
+    public static String generateUniqueJobTitle(){
+        return "Job_" + getTimestamp();
+    }
+
+    public static String generateUniqueVacancyName(){
+        return "Vacancy_" + getTimestamp();
+    }
 }

@@ -4,7 +4,8 @@
         <classes>
             <class name = "tests.LoginTests"/>
             <class name = "tests.AdminTests"/>
-            <class name="tests.UserLifecycleTests"></class>
+            <class name="tests.UserLifecycleTests"/>
+            <class name="tests.RecruitmentLifecycleTests"/>
         </classes>
     </test>
 </suite>
