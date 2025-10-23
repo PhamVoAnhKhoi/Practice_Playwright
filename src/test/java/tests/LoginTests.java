@@ -10,6 +10,7 @@ import utils.AccountData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.ConfigReader;
+import utils.ScreenshotHelper;
 
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class LoginTests extends BaseTest {
     public void happyPathLogin(){
         loginPage.loginAccount(ConfigReader.getAdminUser(),ConfigReader.getAdminPassword());//Password is correct
         assertThat(loginPage.isLoginSuccess()).as("User should be logged in").isTrue();
+        ScreenshotHelper.captureAndAttach(page,"Login success");
     }
 
     //Unhappy Test
@@ -48,6 +50,7 @@ public class LoginTests extends BaseTest {
         loginPage.loginAccount(ConfigReader.getAdminUser(),AccountData.INVALIDPASSWORD);
         String err = loginPage.getInvalidError();
         AssertionsForClassTypes.assertThat(err).isEqualTo(AccountData.INVALIDSTATUS);
+        ScreenshotHelper.captureAndAttach(page,"Login with invalid password");
     }
 
     //Empty Account
@@ -60,6 +63,7 @@ public class LoginTests extends BaseTest {
         List<String> err = loginPage.getAllRequiredMessages();
         assertThat(err).containsExactlyInAnyOrder(AccountData.EMPTYSTATUS,AccountData.EMPTYSTATUS);
         log.info("Errors: " + err);
+        ScreenshotHelper.captureAndAttach(page,"Login with empty account");
     }
     //Empty Username
     @Test (description = "Login with empty Username")
@@ -71,6 +75,7 @@ public class LoginTests extends BaseTest {
         List<String> err = loginPage.getAllRequiredMessages();
         assertThat(err).containsExactlyInAnyOrder(AccountData.EMPTYSTATUS);
         log.info("Errors: " + err);
+        ScreenshotHelper.captureAndAttach(page,"Login with empty username");
     }
 
     //Empty Password
@@ -83,5 +88,6 @@ public class LoginTests extends BaseTest {
         List<String> err = loginPage.getAllRequiredMessages();
         assertThat(err).containsExactlyInAnyOrder(AccountData.EMPTYSTATUS);
         log.info("Errors: " + err);
+        ScreenshotHelper.captureAndAttach(page,"Login with empty password");
     }
 }

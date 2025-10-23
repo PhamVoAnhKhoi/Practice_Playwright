@@ -36,17 +36,55 @@ public class AddVacancyPage {
         this.txtEdit = page.locator("//div[contains(@class,'orangehrm-card-container')]/descendant::h6[normalize-space()='Edit Vacancy']");
     }
 
-    @Step("Input Vacancy Info")
-    public void addVacancy(String vacancyName, String jobTitle, String employeeName){
-        //Input Vacancy Name
-        fillVacancyName(vacancyName);
+    @Step("Is navigate to Edit form")
+    public boolean isNavigateToEditForm(){
+        try{
+            txtEdit.waitFor();
+            return txtEdit.isVisible();
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
 
-        //Dropdown list Job Title
-        selectJobTitle(jobTitle);
+    @Step("Input vacancy name: {vacancyName}")
+    public void inputVacancyName(String vacancyName) {
+        inputVacancyName.waitFor();
+        inputVacancyName.fill(vacancyName);
+        log.info("Filled Vacancy Name: {}", vacancyName);
+    }
 
-        //Input Hiring Manager
-        selectHiringManager(employeeName);
+    @Step("Select Job Title: {jobTitle}")
+    public void selectJobTitle(String jobTitle) {
+        ddlJobTitle.click();
+        optionJobTitle.first().waitFor();
 
+        Locator matchingOption = optionJobTitle.filter(
+                new Locator.FilterOptions().setHasText(jobTitle.trim())
+        );
+        matchingOption.first().click();
+        log.info("Job Title is selected");
+    }
+
+    @Step("Select Hiring Manager: {employeeName}")
+    public void selectHiringManager(String employeeName) {
+        inputHiringManager.fill(employeeName);
+
+        page.waitForSelector(
+                "//div[contains(@class,'oxd-autocomplete-dropdown')]",
+                new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE)
+        );
+
+        Locator matchingOption = optionHiringManager.filter(
+                new Locator.FilterOptions().setHasText(employeeName.trim())
+        );
+        matchingOption.first().click();
+        log.info("Hiring Manager is selected");
+    }
+
+    @Step("Click button save")
+    public void clickSaveButton(){
+        btnSave.waitFor();
         btnSave.click();
     }
 
@@ -60,50 +98,4 @@ public class AddVacancyPage {
 //            return false;
 //        }
 //    }
-
-    @Step("Is navigate to Edit form")
-    public boolean isNavigateToEditForm(){
-        try{
-            txtEdit.waitFor();
-            return txtEdit.isVisible();
-        }
-        catch(Exception e){
-            return false;
-        }
-    }
-
-    private void fillVacancyName(String vacancyName) {
-        inputVacancyName.waitFor();
-        inputVacancyName.fill(vacancyName);
-        log.info("Filled Vacancy Name: {}", vacancyName);
-    }
-
-    private void selectJobTitle(String jobTitle) {
-        ddlJobTitle.click();
-        optionJobTitle.first().waitFor();
-
-        Locator matchingOption = optionJobTitle.filter(
-                new Locator.FilterOptions().setHasText(jobTitle.trim())
-        );
-
-        log.info("Selecting Job Title: {}", jobTitle);
-        matchingOption.first().click();
-    }
-
-    private void selectHiringManager(String employeeName) {
-        inputHiringManager.fill(employeeName);
-
-        page.waitForSelector(
-                "//div[contains(@class,'oxd-autocomplete-dropdown')]",
-                new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE)
-        );
-
-        Locator matchingOption = optionHiringManager.filter(
-                new Locator.FilterOptions().setHasText(employeeName.trim())
-        );
-
-        log.info("Selecting Hiring Manager: {}", employeeName);
-        matchingOption.first().click();
-    }
-
 }

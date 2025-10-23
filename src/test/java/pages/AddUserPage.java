@@ -25,7 +25,7 @@ public class AddUserPage{
     private Locator btnSave;
     private Locator toastSuccessfully;
 
-    private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
+    private static final Logger log = LoggerFactory.getLogger(AddUserPage.class);
     public AddUserPage(Page page){
         this.page = page;
         this.btnAdd = page.locator("//button[contains(@class,'oxd-button') and normalize-space(.)='Add']");
@@ -50,6 +50,7 @@ public class AddUserPage{
     public void clickAddButton(){
         btnAdd.waitFor();
         btnAdd.click();
+        log.info("Click button Add");
     }
 
     @Step("Add user form visible")
@@ -68,10 +69,11 @@ public class AddUserPage{
         ddlUserRole.click();
         optionAdminUserRole.waitFor();
         optionAdminUserRole.click();
+        log.info("Select Admin role");
     }
 
-    @Step("Input user information")
-    public void inputUserInfo(String inputName, String fullName,String userName, String passWord, String confirmPassword ){
+    @Step("Input Employee name: {fullName}")
+    public void inputEmployeeName(String inputName, String fullName){
         inputEmployeeName.waitFor();
         inputEmployeeName.fill(inputName);
         page.waitForSelector("//div[contains(@class,'oxd-autocomplete-dropdown')]",
@@ -81,10 +83,28 @@ public class AddUserPage{
                 new Locator.FilterOptions().setHasText(fullName.trim())
         );
         matchingOption.first().click();
+        log.info("Select Employee name");
+    }
+
+    @Step("Input Username: {userName}")
+    public void inputUsername(String userName){
         inputUsername.waitFor();
         inputUsername.fill(userName);
+        log.info("Input username: " + userName);
+    }
+
+    @Step("Input Password: {passWord}")
+    public void inputPassword(String passWord){
+        inputPassword.waitFor();
         inputPassword.fill(passWord);
+        log.info("Input password: " + passWord);
+    }
+
+    @Step("Input confirm password: {confirmPassword}")
+    public void inputConfirmPassword(String confirmPassword){
+        inputConfirmPassword.waitFor();
         inputConfirmPassword.fill(confirmPassword);
+        log.info("Input confirm password: " + confirmPassword);
     }
 
     @Step("Select status for user")
@@ -92,10 +112,14 @@ public class AddUserPage{
         ddlUserStatus.click();
         optionEnabledStatus.waitFor();
         optionEnabledStatus.click();
+        log.info("Select option Enable");
     }
-    @Step("Click Save button")
+
+    @Step("Click button Save")
     public void clickSaveButton(){
+        btnSave.waitFor();
         btnSave.click();
+        log.info("Click button Save");
     }
 
     @Step("Create Successfully")

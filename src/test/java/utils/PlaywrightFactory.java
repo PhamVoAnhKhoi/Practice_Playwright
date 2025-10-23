@@ -45,7 +45,33 @@ public class PlaywrightFactory {
         context = browser.newContext(options);
         page = context.newPage();
 
+        attachPlaywrightEventHooks(page);
+
         return page;
+    }
+
+    private static void attachPlaywrightEventHooks(Page page) {
+
+        // Log whenever Page navigate
+        page.onFrameNavigated(frame -> {
+            log.info("Navigated to URL: {}", frame.url());
+        });
+
+        // Log whenever request send
+        page.onRequest(request -> {
+            log.debug("Request: {} {}", request.method(), request.url());
+        });
+
+        // Log whenever response return
+        page.onResponse(response -> {
+            log.debug("Response: {} {}", response.status(), response.url());
+        });
+
+        // Log whenever dialog alert/confirm/prompt appear
+        page.onDialog(dialog -> {
+            log.warn("Dialog appeared: {}", dialog.message());
+            dialog.dismiss();
+        });
     }
 
     public static void tearDown(){

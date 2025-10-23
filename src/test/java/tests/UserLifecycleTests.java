@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 import pages.*;
 import utils.AccountData;
 import utils.DataHelper;
+import utils.ScreenshotHelper;
 import utils.SystemUser;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -85,7 +86,7 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         log.info("======== Create Employee ========");
         pimPage.clickPIMSideBarButton();
         pimPage.navigateToAddEmployeePage();
-        addEmployeePage.addEmployee(uniqueFirstName,uniqueMiddleName,uniqueLastName,uniqueUserId);
+        addEmployeePage.inputEmployeeInfo(uniqueFirstName, uniqueMiddleName, uniqueLastName, uniqueUserId);
         //addEmployeePage.clickCreateLoginDetailsButton();
         //addEmployeePage.addDetailsUser(uniqueUserName, AccountData.EMPLOYEEPASSWORD, AccountData.EMPLOYEEPASSWORD);
         addEmployeePage.clickSaveButton();
@@ -93,12 +94,11 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
                 .as("Create fail")
                 .isTrue();
         log.info("Create Successfully");
-
     }
 
     private void createUser(){
         log.info("======== Create user ========");
-        userManagementPage.clickAdminSideBarButton();
+        userManagementPage.navigateToAdminPage();
         assertThat(userManagementPage.isHeaderTitleVisible())
                 .as("Header tittle must be visible")
                 .isTrue();
@@ -108,19 +108,25 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
                 .isTrue();
         addUserPage.selectUserRole();
         addUserPage.selectStatus();
-        addUserPage.inputUserInfo(uniqueFirstName, uniqueFullName,uniqueUserName, AccountData.EMPLOYEEPASSWORD, AccountData.EMPLOYEEPASSWORD);
+        addUserPage.inputEmployeeName(uniqueFirstName, uniqueFullName);
+        addUserPage.inputUsername(uniqueUserName);
+        addUserPage.inputPassword(AccountData.EMPLOYEEPASSWORD);
+        addUserPage.inputConfirmPassword(AccountData.EMPLOYEEPASSWORD);
+
         addUserPage.clickSaveButton();
+    }
+
+    private void verifyCreateUserSuccess(){
         assertThat(addUserPage.isCreateSuccessfully())
                 .as("Create fail")
                 .isTrue();
         log.info("Create Successfully");
-    }
 
-    private void verifyCreateUserSuccess(){
         //check user is visible
         log.info("======== Check user is visible in table ========");
-        userManagementPage.clickAdminSideBarButton();
-        userManagementPage.searchUsername(uniqueUserName);
+        userManagementPage.navigateToAdminPage();
+        userManagementPage.inputSearchUsername(uniqueUserName);
+        userManagementPage.clickSearchButton();
         userManagementPage.waitForSearchResult();
         assertThat(userManagementPage.isUserPresentInTable(uniqueUserName))
                 .as("User search result should return exactly one record")
@@ -128,17 +134,23 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
 
         SystemUser actualUser = userManagementPage.getUserDetailsFromTable(uniqueUserName);
         assertThat(actualUser).as("User must exist in table").isNotNull();
-        assertThat(actualUser.getUserRole()).isEqualTo(AccountData.USERROLE); // ví dụ
-        assertThat(actualUser.getStatus()).isEqualTo(AccountData.USERSTATUS); // ví dụ
+        assertThat(actualUser.getUserRole()).isEqualTo(AccountData.USERROLE);
+        assertThat(actualUser.getStatus()).isEqualTo(AccountData.USERSTATUS);
         log.info("Verified user details: " + actualUser);
+        ScreenshotHelper.captureAndAttach(page,"User visible in table");
     }
 
     private void deleteUser(){
         log.info("======== Delete user ========");
-        userManagementPage.clickAdminSideBarButton();
-        userManagementPage.searchUsername(uniqueUserName);
+        userManagementPage.navigateToAdminPage();
+        userManagementPage.inputSearchUsername(uniqueUserName);
+        userManagementPage.clickSearchButton();
         userManagementPage.waitForSearchResult();
         userManagementPage.deleteUser(uniqueUserName);
+        assertThat(userManagementPage.confirmDeleteNotificationIsVisible())
+                .as("Confirm delete notification must be visible")
+                .isTrue();
+        userManagementPage.confirmDelete();
     }
 
     private void verifyDeleteUserSuccess(){
@@ -148,8 +160,8 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         log.info("Delete user Successfully");
 
         log.info("======== Check user ========");
-        userManagementPage.searchUsername(uniqueUserName);
-
+        userManagementPage.inputSearchUsername(uniqueUserName);
+        userManagementPage.clickSearchButton();
         assertThat(userManagementPage.isUsernameInvisibleAfterDelete())
                 .as("Notification No Record Found must be visible")
                 .isTrue();
@@ -157,7 +169,7 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         assertThat(userManagementPage.isUserNotVisibleInTable(uniqueUserName))
                 .as("User should not be visible in table after deletion")
                 .isTrue();
-
+        ScreenshotHelper.captureAndAttach(page,"User does not exist in table");
         log.info("No record is found");
     }
 
@@ -168,6 +180,7 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueFullName);
         pimPage.waitForSearchResult();
         pimPage.deleteEmployee(uniqueUserId);
+        pimPage.confirmDelete();
     }
 
     private void verifyDeleteEmployeeSuccess(){
@@ -186,7 +199,7 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         assertThat(pimPage.isEmployeeNotVisibleInTable(uniqueFullName))
                 .as("Employee should not be visible in table after deletion")
                 .isTrue();
-
+        ScreenshotHelper.captureAndAttach(page,"Employee does not exist in table");
         log.info("No record is found");
     }
 }

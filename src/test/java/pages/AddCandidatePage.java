@@ -3,7 +3,11 @@ package pages;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.TimeoutError;
+import io.qameta.allure.Description;
 import io.qameta.allure.Step;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tests.UserLifecycleTests;
 
 public class AddCandidatePage {
 
@@ -16,6 +20,7 @@ public class AddCandidatePage {
     private Locator inputEmail;
     private Locator btnSave;
     private Locator toastSuccessfully;
+    private static final Logger log = LoggerFactory.getLogger(AddCandidatePage.class);
 
     public AddCandidatePage(Page page){
         this.page = page;
@@ -41,14 +46,25 @@ public class AddCandidatePage {
         }
     }
 
-    @Step("Input info candidate")
-    public void addCandiate(String firstName, String middleName, String lastName, String email){
+    @Step("Input candidate information")
+    @Description("Input first name: {firstName}"
+            + "Input middle name: {middleName}"
+            + "Input last name: {lastName}"
+            + "Input email: {email}")
+    public void inputCandidateInfo(String firstName, String middleName, String lastName, String email){
         inputFirstName.waitFor();
         inputFirstName.fill(firstName);
         inputMiddleName.fill(middleName);
         inputLastName.fill(lastName);
         inputEmail.fill(email);
+        log.info("Input candidate information");
+    }
+
+    @Step("Click Save button")
+    public void clickSaveButton(){
+        btnSave.waitFor();
         btnSave.click();
+        log.info("Click button Save");
     }
 
     @Step("Create Successfully")

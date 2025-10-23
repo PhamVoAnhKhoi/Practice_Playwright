@@ -11,6 +11,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.*;
 import utils.DataHelper;
+import utils.ScreenshotHelper;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -58,6 +59,7 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
     public void shouldCreateVacancyAddCandidateAndCleanupSuccessfully(){
         log.info("======== Create Employee ========");
         createEmployee();
+        verifyCreateEmployeeSuccess();
         log.info("======== Create Job Title ========");
         createJobTitle();
         verifyCreateJobTitleSuccess();
@@ -81,6 +83,7 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
         verifyDeleteEmployeeSuccess();
     }
 
+    //Candidate Action
     private void createCandidates(){
         recruitmentPage.navigateToRecruitmentPage();
         recruitmentPage.navigateToCandidatesPage();
@@ -88,7 +91,8 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
         assertThat(addCandidatePage.isNavigateToAddCandidateForm())
                 .as("Form Add Candidates must be visible")
                 .isTrue();
-        addCandidatePage.addCandiate(uniqueFirstName, uniqueMiddleName, uniqueLastName, uniqueEmail);
+        addCandidatePage.inputCandidateInfo(uniqueFirstName, uniqueMiddleName, uniqueLastName, uniqueEmail);
+        addCandidatePage.clickSaveButton();
     }
 
     private void verifyCreateCandidatesSuccess(){
@@ -99,19 +103,26 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
 
         recruitmentPage.navigateToRecruitmentPage();
         recruitmentPage.navigateToCandidatesPage();
-        recruitmentPage.searchCandidateName(uniqueFirstName,uniqueEmployeeName);
+        recruitmentPage.inputSearchCandidateName(uniqueFirstName,uniqueEmployeeName);
+        recruitmentPage.clickSearchButton();
         recruitmentPage.waitForSearchResult();
         assertThat(recruitmentPage.isCandidatePresentInTable(uniqueEmployeeName))
                 .as("Search result should return exactly")
                 .isTrue();
+        ScreenshotHelper.captureAndAttach(page,"Candidate visible in table");
     }
 
     private void deleteCandidates(){
         recruitmentPage.navigateToRecruitmentPage();
         recruitmentPage.navigateToCandidatesPage();
-        recruitmentPage.searchCandidateName(uniqueFirstName, uniqueEmployeeName);
+        recruitmentPage.inputSearchCandidateName(uniqueFirstName, uniqueEmployeeName);
+        recruitmentPage.clickSearchButton();
         recruitmentPage.waitForSearchResult();
         recruitmentPage.deleteCandidate(uniqueEmployeeName);
+        assertThat(recruitmentPage.confirmDeleteNotificationIsVisible())
+                .as("Confirm delete notification must be visible")
+                .isTrue();
+        recruitmentPage.confirmDelete();
     }
 
     private void verifyDeleteCandidateSuccess(){
@@ -121,25 +132,30 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
         log.info("Delete Candidate Successfully");
 
         log.info("======== Check Candidate ========");
-        recruitmentPage.searchCandidateName(uniqueFirstName, uniqueEmployeeName);
+        recruitmentPage.inputSearchCandidateName(uniqueFirstName, uniqueEmployeeName);
+        recruitmentPage.clickSearchButton();
         assertThat(recruitmentPage.invalidSearchResult()).
                 as("Message invalid must visible").isTrue();
         recruitmentPage.waitForSearchResult();
+
         assertThat(recruitmentPage.isCandidateNotVisibleInTable(uniqueEmployeeName))
                 .as("Candidate name should not be visible in table after deletion")
                 .isTrue();
         log.info("No record is found");
+        ScreenshotHelper.captureAndAttach(page,"Candidate does not exist in table");
     }
 
+    //Job title Action
     private void createJobTitle(){
-        userManagementPage.clickAdminSideBarButton();
+        userManagementPage.navigateToAdminPage();
         jobTitlePage.clickJobDropdownTB();
         jobTitlePage.selectOptionJobTitle();
         assertThat(jobTitlePage.isNavigateToJobTitle())
                 .as("The text of Job title must be visible")
                 .isTrue();
         jobTitlePage.clickAddButton();
-        jobTitlePage.addJobTitle(uniqueJobTitle);
+        jobTitlePage.inputJobTitle(uniqueJobTitle);
+        jobTitlePage.clickSaveButton();
     }
 
     private void verifyCreateJobTitleSuccess(){
@@ -152,13 +168,16 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
         assertThat(jobTitlePage.isJobTitlePresentInTable(uniqueJobTitle))
                 .as("Search result should return exactly")
                 .isTrue();
+        ScreenshotHelper.captureAndAttach(page,"Job title visible in table");
     }
 
     private void deleteJobTitle(){
-        userManagementPage.clickAdminSideBarButton();
+        userManagementPage.navigateToAdminPage();
         jobTitlePage.clickJobDropdownTB();
         jobTitlePage.selectOptionJobTitle();
         jobTitlePage.deleteJobTitle(uniqueJobTitle);
+        jobTitlePage.confirmDeleteNotificationIsVisible();
+        jobTitlePage.confirmDelete();
     }
 
     private void verifyDeleteJobTitleSuccess(){
@@ -172,13 +191,18 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
                 .as("Job title should not be visible in table after deletion")
                 .isTrue();
         log.info("No record is found");
+        ScreenshotHelper.captureAndAttach(page,"Job title does not exist in table");
     }
 
+    //Vacancies Action
     private void createVacancies(){
         recruitmentPage.navigateToRecruitmentPage();
         recruitmentPage.navigateToVacanciesPage();
         recruitmentPage.clickAddButton();
-        addVacancyPage.addVacancy(uniqueVacancyName, uniqueJobTitle, uniqueEmployeeName);
+        addVacancyPage.inputVacancyName(uniqueVacancyName);
+        addVacancyPage.selectJobTitle(uniqueJobTitle);
+        addVacancyPage.selectHiringManager(uniqueEmployeeName);
+        addVacancyPage.clickSaveButton();
     }
 
     private void verifyCreateVacanciesSuccess(){
@@ -190,30 +214,37 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
 //                .isTrue();
         log.info("Create Successfully");
         recruitmentPage.navigateToVacanciesPage();
-        recruitmentPage.searchVacancyName(uniqueVacancyName);
+        recruitmentPage.selectOptionVacancyName(uniqueVacancyName);
+        recruitmentPage.clickSearchButton();
         recruitmentPage.waitForSearchResult();
         assertThat(recruitmentPage.isVacancyPresentInTable(uniqueVacancyName))
                 .as("Search result should return exactly")
                 .isTrue();
+        ScreenshotHelper.captureAndAttach(page,"Vacancies visible in table");
     }
 
     private void deleteVacancies(){
         recruitmentPage.navigateToRecruitmentPage();
         recruitmentPage.navigateToVacanciesPage();
-        recruitmentPage.searchVacancyName(uniqueVacancyName);
+        recruitmentPage.selectOptionVacancyName(uniqueVacancyName);
+        recruitmentPage.clickSearchButton();
         recruitmentPage.waitForSearchResult();
         recruitmentPage.deleteVacancy(uniqueVacancyName);
+        assertThat(recruitmentPage.confirmDeleteNotificationIsVisible())
+                .as("Confirm delete notification must be visible")
+                .isTrue();
+        recruitmentPage.confirmDelete();
     }
 
     private void verifyDeleteVacanciesSuccess(){
         assertThat(recruitmentPage.isDeleteSuccessfully())
                 .as("Delete fail")
                 .isTrue();
-        log.info("Delete Employee Successfully");
+        log.info("Delete Vacancies Successfully");
 
         log.info("======== Check Vacancy ========");
-        recruitmentPage.searchVacancyName(uniqueVacancyName);
-
+        recruitmentPage.selectOptionVacancyName(uniqueVacancyName);
+        recruitmentPage.clickSearchButton();
         assertThat(recruitmentPage.isNoRecordInvisibleAfterDelete())
                 .as("Notification No Record Found must be visible")
                 .isTrue();
@@ -222,19 +253,32 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
                 .as("Vacancy name should not be visible in table after deletion")
                 .isTrue();
         log.info("No record is found");
+        ScreenshotHelper.captureAndAttach(page,"Vacancies does not exist in table");
     }
 
+    //Employee Action
     private void createEmployee(){
         pimPage.clickPIMSideBarButton();
         pimPage.navigateToAddEmployeePage();
-        addEmployeePage.addEmployee(uniqueFirstName,uniqueMiddleName,uniqueLastName,uniqueUserId);
+        addEmployeePage.inputEmployeeInfo(uniqueFirstName, uniqueMiddleName, uniqueLastName, uniqueUserId);
         //addEmployeePage.clickCreateLoginDetailsButton();
         //addEmployeePage.addDetailsUser(uniqueUserName, AccountData.EMPLOYEEPASSWORD, AccountData.EMPLOYEEPASSWORD);
         addEmployeePage.clickSaveButton();
+    }
+
+    private void verifyCreateEmployeeSuccess(){
         assertThat(addEmployeePage.isCreateSuccessfully())
                 .as("Create fail")
                 .isTrue();
         log.info("Create Successfully");
+
+        pimPage.navigateToEmployeeListPage();
+        pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueEmployeeName);
+        pimPage.waitForSearchResult();
+        assertThat(pimPage.isEmployeePresentInTable(uniqueUserId))
+                .as("Search result should return exactly")
+                .isTrue();
+        ScreenshotHelper.captureAndAttach(page,"Employee visible in table");
     }
 
     private void deleteEmployee(){
@@ -243,6 +287,7 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
         pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueEmployeeName);
         pimPage.waitForSearchResult();
         pimPage.deleteEmployee(uniqueUserId);
+        pimPage.confirmDelete();
     }
 
     private void verifyDeleteEmployeeSuccess(){
@@ -263,8 +308,10 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
                 .isTrue();
 
         log.info("No record is found");
+        ScreenshotHelper.captureAndAttach(page,"Employee does not exist in table");
     }
 
+    //Generate unique data
     private void generateUniqueData(){
         //Generate unique Account
         uniqueFirstName = DataHelper.generateUniqueFirstName();

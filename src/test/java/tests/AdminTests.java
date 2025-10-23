@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.UserManagementPage;
+import utils.ScreenshotHelper;
 import utils.SystemUser;
 
 import java.util.List;
@@ -26,7 +27,8 @@ public class AdminTests extends AuthenticatedBaseTest {
         assertThat(userManagementPage.isSidebarVisible())
                 .as("Sidebar must be visible after log in successfully")
                 .isTrue();
-        userManagementPage.clickAdminSideBarButton();
+
+        userManagementPage.navigateToAdminPage();
         assertThat(userManagementPage.isHeaderTitleVisible())
                 .as("Header title must be visible")
                 .isTrue();
@@ -44,7 +46,8 @@ public class AdminTests extends AuthenticatedBaseTest {
         log.info("First user: {}", firstUser);
 
         assertThat(firstUser.getUsername()).isNotBlank();
-        assertThat(firstUser.getUserRole()).isIn("Admin", "ESS"); // ví dụ hợp lý
+        assertThat(firstUser.getUserRole()).isIn("Admin", "ESS");
         assertThat(firstUser.getStatus()).isIn("Enabled", "Disabled");
+        ScreenshotHelper.captureAndAttach(page,"take data from table");
     }
 }

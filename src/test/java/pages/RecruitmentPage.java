@@ -29,6 +29,7 @@ public class RecruitmentPage {
     private Locator optionSearching;
     private Locator optionNoRecordFound;
     private Locator msgErrorInvalid;
+    private Locator confirmDeleteNotification;
 
     private static final Logger log = LoggerFactory.getLogger(RecruitmentPage.class);
 
@@ -52,19 +53,21 @@ public class RecruitmentPage {
         this.optionSearching = page.locator("//div[contains(@class,'oxd-autocomplete-dropdown')]/descendant::div[@role='option' and normalize-space(.)='Searching....']");
         this.optionNoRecordFound = page.locator("//div[@role='option' and normalize-space(.)='No Records Found']");
         this.msgErrorInvalid = page.locator("//span[contains(@class,'oxd-text') and normalize-space(.)='Invalid']");
+        this.confirmDeleteNotification = page.locator("//div[contains(@class,'orangehrm-modal-header')]/parent::div");
     }
-
 
     @Step("Navigate to Recruitment page")
     public void navigateToRecruitmentPage(){
         btnRecruitmentSB.waitFor();
         btnRecruitmentSB.click();
+        log.info("Click button Recruitment on sidebar");
     }
 
     @Step("Navigate to Vancancies")
     public void navigateToVacanciesPage(){
         vacanciesTBButton.waitFor();
         vacanciesTBButton.click();
+        log.info("Click button Vacancies on topbar");
     }
 
     @Step("Click Add button")
@@ -74,7 +77,7 @@ public class RecruitmentPage {
     }
 
     @Step("Search by Vacancy Name")
-    public void searchVacancyName(String vacancyName){
+    public void selectOptionVacancyName(String vacancyName){
         ddlVacancy.waitFor();
         ddlVacancy.click();
 
@@ -86,11 +89,16 @@ public class RecruitmentPage {
             log.info("Selecting vacancy name: {}", vacancyName);
             matchingOption.first().click();
         }
-
-        btnSearch.click();
     }
 
-    @Step("Check user present in table")
+    @Step("Search")
+    public void clickSearchButton(){
+        btnSearch.waitFor();
+        btnSearch.click();
+        log.info("Click button Search");
+    }
+
+    @Step("Check vacancy present in table")
     public boolean isVacancyPresentInTable(String vacancies){
         rows.first().waitFor();
         Locator matchingRows = rows.filter(
@@ -98,7 +106,7 @@ public class RecruitmentPage {
         );
 
         int count = matchingRows.count();
-        log.info("Found " + count + " matching rows for username: " + vacancies);
+        log.info("Found " + count + " matching rows for vacancy: " + vacancies);
 
         return count == 1;
     }
@@ -110,8 +118,25 @@ public class RecruitmentPage {
         targetRow.waitFor();
         btnDelete = targetRow.locator("xpath=.//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
         btnDelete.click();
+        log.info("Click button Delete in table");
+    }
+
+    @Step("Check Confirm delete notification is visible")
+    public boolean confirmDeleteNotificationIsVisible(){
+        try{
+            confirmDeleteNotification.waitFor();
+            return confirmDeleteNotification.isVisible();
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
+
+    @Step("Confirm Delete")
+    public void confirmDelete(){
         btnConfirmDelete.waitFor();
         btnConfirmDelete.click();
+        log.info("Button confirm delete is clicked");
     }
 
     @Step("Check Delete Successful")
@@ -129,6 +154,7 @@ public class RecruitmentPage {
     public void waitForSearchResult(){
         try{
             loadSpinnerTable.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+            log.info("Loading spinner is visible");
         }
         catch(Exception ignored){
             log.info("Spinner not visible - skipping wait for visible state.");
@@ -158,7 +184,7 @@ public class RecruitmentPage {
         );
 
         int count = matchingRows.count();
-        log.info("After deletion, found {} matching rows for employee '{}'", count, vacancyName);
+        log.info("After deletion, found {} matching rows for vacancy '{}'", count, vacancyName);
 
         return count == 0;
     }
@@ -170,7 +196,7 @@ public class RecruitmentPage {
     }
 
     @Step("Search by candidate name")
-    public void searchCandidateName(String inputName, String employeeName){
+    public void inputSearchCandidateName(String inputName, String employeeName){
         inputCandidateName.waitFor();
         inputCandidateName.fill(inputName);
         page.waitForSelector("//div[contains(@class,'oxd-autocomplete-dropdown')]",
@@ -185,10 +211,9 @@ public class RecruitmentPage {
         catch (Exception e){
             log.info("No record found");
         }
-        btnSearch.click();
     }
 
-    @Step("Check user present in table")
+    @Step("Check candidate present in table")
     public boolean isCandidatePresentInTable(String candidates){
         rows.first().waitFor();
         Locator matchingRows = rows.filter(
@@ -208,11 +233,10 @@ public class RecruitmentPage {
         targetRow.waitFor();
         btnDelete = targetRow.locator("xpath=.//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
         btnDelete.click();
-        btnConfirmDelete.waitFor();
-        btnConfirmDelete.click();
+        log.info("Click delete button on table");
     }
 
-    @Step("Verify vacancy '{vacancyName}' is not visible in the table after deletion")
+    @Step("Verify candidate '{candidateName}' is not visible in the table after deletion")
     public boolean isCandidateNotVisibleInTable(String candidateName) {
         tableHeader.waitFor();
 
@@ -221,7 +245,7 @@ public class RecruitmentPage {
         );
 
         int count = matchingRows.count();
-        log.info("After deletion, found {} matching rows for employee '{}'", count, candidateName);
+        log.info("After deletion, found {} matching rows for candidate '{}'", count, candidateName);
 
         return count == 0;
     }

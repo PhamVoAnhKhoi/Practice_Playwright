@@ -22,7 +22,7 @@ public class AddEmployeePage {
     private Locator toastSuccessfully;
 
 
-    private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
+    private static final Logger log = LoggerFactory.getLogger(AddEmployeePage.class);
     public AddEmployeePage(Page page){
         this.page = page;
         this.inputFirstName = page.locator("//div[contains(@class,'oxd-input-group')]/descendant::input[@name='firstName']");
@@ -35,18 +35,20 @@ public class AddEmployeePage {
         this.inputConfirmPassword = page.locator("//label[contains(@class,'oxd-label') and contains(normalize-space(text()),'Confirm Password')]/parent::div/following-sibling::div/input");
         this.btnSave = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[normalize-space(.)='Save']");
         this.toastSuccessfully = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'Successfully')]");
-
     }
 
-
-
-    @Step("Input Employee information")
-    @Description("FirstName: firstName, LastName: lastName, ID: employeeId")
-    public void addEmployee(String firstName, String middleName ,String lastName, String employeeId){
+    @Step("Input employee information")
+    @Description("Input first name: {firstName}"
+            + "Input middle name: {middleName}"
+            + "Input last name: {lastName}"
+            + "Input id: {employeeId}")
+    public void inputEmployeeInfo(String firstName, String middleName, String lastName, String employeeId){
+        inputFirstName.waitFor();
         inputFirstName.fill(firstName);
         inputMiddleName.fill(middleName);
         inputLastName.fill(lastName);
         inputEmpyeeId.fill(employeeId);
+        log.info("Input employee information");
     }
 
     @Step("Input Login Account Details:")
@@ -70,7 +72,9 @@ public class AddEmployeePage {
 
     @Step("Click Save button")
     public void clickSaveButton(){
+        btnSave.waitFor();
         btnSave.click();
+        log.info("Click button Save");
     }
 
     @Step("Create Successfully")

@@ -27,7 +27,7 @@ public class PIMPage {
 
 
 
-    private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
+    private static final Logger log = LoggerFactory.getLogger(PIMPage.class);
 
     public PIMPage(Page page){
         this.page =page;
@@ -51,18 +51,21 @@ public class PIMPage {
     public void navigateToAddEmployeePage(){
         btnAddEmployeeTB.waitFor();
         btnAddEmployeeTB.click();
+        log.info("Click button Add Employee in topbar");
     }
 
     @Step("Click EmployeeList button ")
     public void navigateToEmployeeListPage(){
         btnEmployeeListTB.waitFor();
         btnEmployeeListTB.click();
+        log.info("Click button Employee List in topbar");
     }
 
     @Step("Click PIM button on sidebar")
     public void clickPIMSideBarButton(){
         btnPIMSB.waitFor();
         btnPIMSB.click();
+        log.info("Click PIM button on sidebar");
     }
 
     @Step("Search employee by Firstname")
@@ -99,6 +102,19 @@ public class PIMPage {
         log.info("[Employee]Loading spinner has disappeared. Table is now stable.");
     }
 
+    @Step("Check employee present in table")
+    public boolean isEmployeePresentInTable(String id){
+        rows.first().waitFor();
+        Locator matchingRows = rows.filter(
+                new Locator.FilterOptions().setHasText(id.trim())
+        );
+
+        int count = matchingRows.count();
+        log.info("Found " + count + " matching rows for employee: " + id);
+
+        return count == 1;
+    }
+
     @Step("Delete employee")
     public void deleteEmployee(String userId){
         tableHeader.waitFor();
@@ -106,8 +122,14 @@ public class PIMPage {
         targetRow.waitFor();
         btnDelete = targetRow.locator("xpath=.//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
         btnDelete.click();
+        log.info("Click button delete");
+    }
+
+    @Step("Confirm Delete")
+    public void confirmDelete(){
         btnConfirmDelete.waitFor();
         btnConfirmDelete.click();
+        log.info("Button confirm delete is clicked");
     }
 
     @Step("Check employee is deleted Successfully")

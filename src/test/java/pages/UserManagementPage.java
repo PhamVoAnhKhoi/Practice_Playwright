@@ -29,6 +29,7 @@ public class UserManagementPage {
     private Locator userNameTable;
     private Locator loadSpinnerTable;
     private Locator btnDelete;
+    private Locator confirmDeleteNotification;
 
     private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
 
@@ -46,7 +47,7 @@ public class UserManagementPage {
         this.toastNoRecordFound = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'No Records Found')]");
         this.userNameTable = page.locator("//div[contains(@class,'oxd-table-card-cell-checkbox')]/ancestor::div[contains(@class,'oxd-table-cell')]/following-sibling::div[1]/div");
         this.loadSpinnerTable = page.locator("//div[contains(@class,'oxd-table-loader')]/descendant::div[@class='oxd-loading-spinner']");
-
+        this.confirmDeleteNotification = page.locator("//div[contains(@class,'orangehrm-modal-header')]/parent::div");
     }
 
     @Step("Get all users from the table")
@@ -67,9 +68,10 @@ public class UserManagementPage {
 
 
     @Step("Click Admin button on sidebar")
-    public void clickAdminSideBarButton(){
+    public void navigateToAdminPage(){
         sideBar.waitFor();
         btnAdminSB.click();
+        log.info("Admin button on side bar is clicked");
     }
 
     @Step("Sidebar is visible")
@@ -95,15 +97,24 @@ public class UserManagementPage {
     }
 
     @Step("Search user by Username")
-    public void searchUsername(String userName){
+    public void inputSearchUsername(String userName){
+        inputUsername.waitFor();
         inputUsername.fill(userName);
+        log.info("Input: " + userName);
+    }
+
+    @Step("Click search button")
+    public void clickSearchButton(){
+        btnSearch.waitFor();
         btnSearch.click();
+        log.info("Button search is clicked");
     }
 
     @Step("Wait for search results to load")
     public void waitForSearchResult(){
         try{
             loadSpinnerTable.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+            log.info("Loading spinner is visible");
         }
         catch(Exception ignored){
             log.info("Spinner not visible - skipping wait for visible state.");
@@ -120,11 +131,26 @@ public class UserManagementPage {
         targetRow.waitFor();
         btnDelete = targetRow.locator("xpath=.//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-trash')]");
         btnDelete.click();
-        btnConfirmDelete.waitFor();
-        btnConfirmDelete.click();
+        log.info("Button delete is clicked");
     }
 
+    @Step("Check Confirm delete notification is visible")
+    public boolean confirmDeleteNotificationIsVisible(){
+        try{
+            confirmDeleteNotification.waitFor();
+            return confirmDeleteNotification.isVisible();
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
 
+    @Step("Confirm Delete")
+    public void confirmDelete(){
+        btnConfirmDelete.waitFor();
+        btnConfirmDelete.click();
+        log.info("Button confirm delete is clicked");
+    }
 
     @Step("Delete Successfully")
     public boolean isDeleteSuccessfully(){
