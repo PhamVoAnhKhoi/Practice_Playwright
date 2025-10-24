@@ -253,7 +253,7 @@ public class RecruitmentPage {
     @Step("Is Invalid search result visible?")
     public boolean invalidSearchResult(){
         try{
-            msgErrorInvalid.waitFor();
+            msgErrorInvalid.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
             return msgErrorInvalid.isVisible();
         }
         catch (Exception e){

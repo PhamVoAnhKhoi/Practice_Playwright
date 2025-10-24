@@ -108,10 +108,7 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
                 .isTrue();
         addUserPage.selectUserRole();
         addUserPage.selectStatus();
-        addUserPage.inputEmployeeName(uniqueFirstName, uniqueFullName);
-        addUserPage.inputUsername(uniqueUserName);
-        addUserPage.inputPassword(AccountData.EMPLOYEEPASSWORD);
-        addUserPage.inputConfirmPassword(AccountData.EMPLOYEEPASSWORD);
+        addUserPage.inputUserInfo(uniqueFirstName, uniqueFullName, uniqueUserName, AccountData.EMPLOYEEPASSWORD, AccountData.EMPLOYEEPASSWORD);
 
         addUserPage.clickSaveButton();
     }
