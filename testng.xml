@@ -6,9 +6,9 @@
 
     <test name="LoginTests">
         <classes>
-<!--            <class name = "tests.LoginTests"/>-->
-<!--            <class name = "tests.AdminTests"/>-->
-<!--            <class name="tests.UserLifecycleTests"/>-->
+            <class name = "tests.LoginTests"/>
+            <class name = "tests.AdminTests"/>
+            <class name="tests.UserLifecycleTests"/>
             <class name="tests.RecruitmentLifecycleTests"/>
         </classes>
     </test>
