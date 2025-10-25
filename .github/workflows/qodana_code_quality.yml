@@ -21,6 +21,17 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+
+      - name: 🛠 Install system dependencies
+        run: |
+         sudo apt-get update
+         sudo apt-get install -y \
+           libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
+           libxkbcommon0 libgbm1 libpango-1.0-0 libcairo2 \
+           libasound2 libxshmfence1 libxrandr2 libgtk-3-0 \
+           libdrm2 libxdamage1 libxcomposite1 libxfixes3 libxext6 libxi6
+
+
       - name: ⚙️ Install Playwright browsers
         run: |
           npx playwright install --with-deps chromium
@@ -30,10 +41,10 @@ jobs:
 
       - name: 🧪 Run TestNG tests
         env:
-          HEADED: false
+          HEADED: true
         run: |
           echo "Running Playwright tests..."
-          mvn test
+          mvn test -Dheadless=true
 
       - name: 📊 Generate Allure report
         if: always()
