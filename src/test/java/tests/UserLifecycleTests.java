@@ -1,6 +1,7 @@
 package tests;
 
 import base.AuthenticatedBaseTest;
+import base.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
@@ -10,19 +11,17 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.*;
-import utils.AccountData;
-import utils.DataHelper;
-import utils.ScreenshotHelper;
-import utils.SystemUser;
+import utils.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class UserLifecycleTests extends AuthenticatedBaseTest {
+public class UserLifecycleTests extends BaseTest {
     private static final Logger log = LoggerFactory.getLogger(UserLifecycleTests.class);
     AddEmployeePage addEmployeePage;
     PIMPage pimPage;
     UserManagementPage userManagementPage;
     AddUserPage addUserPage;
+    LoginPage loginPage;
     String uniqueFirstName;
     String uniqueMiddleName;
     String uniqueLastName;
@@ -42,6 +41,11 @@ public class UserLifecycleTests extends AuthenticatedBaseTest {
         pimPage = new PIMPage(page);
         userManagementPage = new UserManagementPage(page);
         addUserPage = new AddUserPage(page);
+        loginPage = new LoginPage(page);
+
+        loginPage.navigateToLoginPage();
+        loginPage.loginAccount(ConfigReader.getAdminUser(), ConfigReader.getAdminPassword());//Password is correct
+
     }
 
     @Test(description = "Test flow: Create Employee & User")

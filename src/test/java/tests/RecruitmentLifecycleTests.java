@@ -1,6 +1,7 @@
 package tests;
 
 import base.AuthenticatedBaseTest;
+import base.BaseTest;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
@@ -10,13 +11,14 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.*;
+import utils.ConfigReader;
 import utils.DataHelper;
 import utils.ScreenshotHelper;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
+public class RecruitmentLifecycleTests extends BaseTest {
     private static final Logger log = LoggerFactory.getLogger(RecruitmentLifecycleTests.class);
 
     PIMPage pimPage;
@@ -26,6 +28,7 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
     RecruitmentPage recruitmentPage;
     AddVacancyPage addVacancyPage;
     AddCandidatePage addCandidatePage;
+    LoginPage loginPage;
     String uniqueJobTitle;
     String uniqueVacancyName;
     String uniqueFirstName;
@@ -52,6 +55,12 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
         recruitmentPage = new RecruitmentPage(page);
         addVacancyPage = new AddVacancyPage(page);
         addCandidatePage = new AddCandidatePage(page);
+
+        loginPage = new LoginPage(page);
+
+        loginPage.navigateToLoginPage();
+        loginPage.loginAccount(ConfigReader.getAdminUser(), ConfigReader.getAdminPassword());//Password is correct
+
     }
 
     @Test(description = "Test flow: Create & Delete Employee - Job Title - Vacancy")
