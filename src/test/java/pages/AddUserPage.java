@@ -4,6 +4,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.TimeoutError;
 import com.microsoft.playwright.options.WaitForSelectorState;
+import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,8 +73,12 @@ public class AddUserPage{
         log.info("Select Admin role");
     }
 
-    @Step("Input Employee name: {fullName}")
-    public void inputEmployeeName(String inputName, String fullName){
+    @Step("Input user information")
+    @Description("Input Employee name: {fullName}"
+            + "Input Username: {userName}"
+            + "Input Password: {passWord}"
+            + "Input confirm password: {confirmPassword}")
+    public void inputUserInfo(String inputName, String fullName, String userName, String passWord, String confirmPassword){
         inputEmployeeName.waitFor();
         inputEmployeeName.fill(inputName);
         page.waitForSelector("//div[contains(@class,'oxd-autocomplete-dropdown')]",
@@ -83,28 +88,11 @@ public class AddUserPage{
                 new Locator.FilterOptions().setHasText(fullName.trim())
         );
         matchingOption.first().click();
-        log.info("Select Employee name");
-    }
 
-    @Step("Input Username: {userName}")
-    public void inputUsername(String userName){
-        inputUsername.waitFor();
         inputUsername.fill(userName);
-        log.info("Input username: " + userName);
-    }
-
-    @Step("Input Password: {passWord}")
-    public void inputPassword(String passWord){
-        inputPassword.waitFor();
         inputPassword.fill(passWord);
-        log.info("Input password: " + passWord);
-    }
-
-    @Step("Input confirm password: {confirmPassword}")
-    public void inputConfirmPassword(String confirmPassword){
-        inputConfirmPassword.waitFor();
         inputConfirmPassword.fill(confirmPassword);
-        log.info("Input confirm password: " + confirmPassword);
+        log.info("Input user information");
     }
 
     @Step("Select status for user")

@@ -199,20 +199,21 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
         recruitmentPage.navigateToRecruitmentPage();
         recruitmentPage.navigateToVacanciesPage();
         recruitmentPage.clickAddButton();
-        addVacancyPage.inputVacancyName(uniqueVacancyName);
-        addVacancyPage.selectJobTitle(uniqueJobTitle);
-        addVacancyPage.selectHiringManager(uniqueEmployeeName);
+        addVacancyPage.inputVacancyInfo(uniqueVacancyName, uniqueJobTitle, uniqueEmployeeName);
         addVacancyPage.clickSaveButton();
     }
 
     private void verifyCreateVacanciesSuccess(){
-        assertThat(addVacancyPage.isNavigateToEditForm())
-                .as("Create fail")
-                .isTrue();
 //        assertThat(addVacancyPage.isCreateSuccessfully())
 //                .as("Create fail")
 //                .isTrue();
+
+        assertThat(addVacancyPage.isNavigateToEditForm())
+                .as("Create fail")
+                .isTrue();
+
         log.info("Create Successfully");
+        log.info("======== Check create Vacancy ========");
         recruitmentPage.navigateToVacanciesPage();
         recruitmentPage.selectOptionVacancyName(uniqueVacancyName);
         recruitmentPage.clickSearchButton();
@@ -271,7 +272,8 @@ public class RecruitmentLifecycleTests extends AuthenticatedBaseTest {
                 .as("Create fail")
                 .isTrue();
         log.info("Create Successfully");
-
+        log.info("======== Check create employee ========");
+        pimPage.clickPIMSideBarButton();
         pimPage.navigateToEmployeeListPage();
         pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueEmployeeName);
         pimPage.waitForSearchResult();

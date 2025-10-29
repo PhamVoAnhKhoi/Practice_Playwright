@@ -4,6 +4,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.TimeoutError;
 import com.microsoft.playwright.options.WaitForSelectorState;
+import io.qameta.allure.Description;
 import io.qameta.allure.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ public class AddVacancyPage {
     private Locator optionJobTitle;
     private Locator btnSave;
     private Locator txtEdit;
+    private Locator toastSuccessfully;
 
 
     private static final Logger log = LoggerFactory.getLogger(AddVacancyPage.class);
@@ -34,6 +36,8 @@ public class AddVacancyPage {
         this.optionHiringManager = page.locator("//div[contains(@class,'oxd-autocomplete-dropdown')]/descendant::span");
         this.btnSave = page.locator("//div[contains(@class,'oxd-form-actions')]/descendant::button[normalize-space(.)='Save']");
         this.txtEdit = page.locator("//div[contains(@class,'orangehrm-card-container')]/descendant::h6[normalize-space()='Edit Vacancy']");
+        this.toastSuccessfully = page.locator("//div[contains(@class,'oxd-toast-container')]/descendant::p[contains(@class,'oxd-toast-content-text') and contains(normalize-space(.),'Successfully')]");
+
     }
 
     @Step("Is navigate to Edit form")
@@ -47,14 +51,26 @@ public class AddVacancyPage {
         }
     }
 
-    @Step("Input vacancy name: {vacancyName}")
+    @Step("Input vacancy info")
+    @Description("Input vacancy name: {vacancyName}"
+            + "Select Job Title: {jobTitle}"
+            + "Select Hiring Manager: {employeeName}")
+    public void inputVacancyInfo(String vacancyName, String jobTitle, String employeeName){
+
+        inputVacancyName(vacancyName);
+
+        selectJobTitle(jobTitle);
+
+        selectHiringManager(employeeName);
+
+        log.info("Input vacancy information");
+    }
+
     public void inputVacancyName(String vacancyName) {
         inputVacancyName.waitFor();
         inputVacancyName.fill(vacancyName);
-        log.info("Filled Vacancy Name: {}", vacancyName);
     }
 
-    @Step("Select Job Title: {jobTitle}")
     public void selectJobTitle(String jobTitle) {
         ddlJobTitle.click();
         optionJobTitle.first().waitFor();
@@ -63,10 +79,8 @@ public class AddVacancyPage {
                 new Locator.FilterOptions().setHasText(jobTitle.trim())
         );
         matchingOption.first().click();
-        log.info("Job Title is selected");
     }
 
-    @Step("Select Hiring Manager: {employeeName}")
     public void selectHiringManager(String employeeName) {
         inputHiringManager.fill(employeeName);
 
@@ -79,7 +93,6 @@ public class AddVacancyPage {
                 new Locator.FilterOptions().setHasText(employeeName.trim())
         );
         matchingOption.first().click();
-        log.info("Hiring Manager is selected");
     }
 
     @Step("Click button save")
@@ -88,14 +101,14 @@ public class AddVacancyPage {
         btnSave.click();
     }
 
-//    @Step("Create Successfully")
-//    public boolean isCreateSuccessfully(){
-//        try{
-//            toastSuccessfully.waitFor();
-//            return toastSuccessfully.isVisible();
-//        }
-//        catch(Exception e){
-//            return false;
-//        }
-//    }
+    @Step("Create Successfully")
+    public boolean isCreateSuccessfully(){
+        try{
+            toastSuccessfully.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+            return toastSuccessfully.isVisible();
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
 }

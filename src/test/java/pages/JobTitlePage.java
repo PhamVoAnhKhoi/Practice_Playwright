@@ -90,7 +90,7 @@ public class JobTitlePage {
     @Step("Create Successfully")
     public boolean isCreateSuccessfully(){
         try{
-            toastSuccessfully.waitFor();
+            toastSuccessfully.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
             return toastSuccessfully.isVisible();
         }
         catch(Exception e){
@@ -101,7 +101,7 @@ public class JobTitlePage {
     @Step("Wait for search results to load")
     public void waitForLoading(){
         try{
-            loadSpinnerTable.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+            loadSpinnerTable.waitFor();
             log.info("Loading spinner is visible");
         }
         catch(Exception ignored){
