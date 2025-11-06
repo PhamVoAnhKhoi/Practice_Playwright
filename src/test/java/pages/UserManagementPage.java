@@ -3,6 +3,7 @@ package pages;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.TimeoutError;
+import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import io.qameta.allure.Step;
 import org.slf4j.Logger;
@@ -29,6 +30,7 @@ public class UserManagementPage {
     private Locator userNameTable;
     private Locator loadSpinnerTable;
     private Locator btnDelete;
+    private Locator btnEdit;
     private Locator confirmDeleteNotification;
 
     private static final Logger log = LoggerFactory.getLogger(UserManagementPage.class);
@@ -262,4 +264,42 @@ public class UserManagementPage {
         return cells.get(index).trim();
     }
 
+    //
+    @Step("Extract all data from UI table (with pagination if applicable)")
+    public List<SystemUser> extractAllUsersFromUITable() {
+        log.info("Start extracting all users from UI table (handling pagination if necessary)");
+        List<SystemUser> allUsers = new ArrayList<>();
+
+        while (true) {
+            waitForSearchResult(); // Đảm bảo bảng ổn định
+            List<SystemUser> pageUsers = getUsers();
+            allUsers.addAll(pageUsers);
+
+            // Kiểm tra có nút "Next" (hoặc ">" / "›") để sang trang tiếp theo
+            Locator nextButton = page.locator("//button[contains(@class,'oxd-pagination-page-item')][normalize-space()='Next' or normalize-space()='>']");
+            boolean hasNext = nextButton.isVisible() && !nextButton.isDisabled();
+
+            if (hasNext) {
+                log.info("Next page detected — moving to next page...");
+                nextButton.click();
+                page.waitForLoadState(LoadState.NETWORKIDLE);
+            } else {
+                log.info("No more pages. Extraction complete.");
+                break;
+            }
+        }
+
+        log.info("Total users extracted from all pages: {}", allUsers.size());
+        return allUsers;
+    }
+
+    @Step("Navigate to form edit user")
+    public void navigateToEditUserPage (String userName){
+        tableHeader.waitFor();
+        Locator targetRow = rows.filter(new Locator.FilterOptions().setHasText(userName.trim())).first();
+        targetRow.waitFor();
+        btnEdit = targetRow.locator("xpath=.//button[contains(@class,'oxd-icon-button')]/descendant::i[contains(@class,'oxd-icon bi-pencil-fill')]");
+        btnEdit.click();
+        log.info("Click edit button on table");
+    }
 }

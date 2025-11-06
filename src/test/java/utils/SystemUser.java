@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.Objects;
+
 public class SystemUser {
     private String username;
     private String userRole;
@@ -37,5 +39,21 @@ public class SystemUser {
                 ", employeeName='" + employeeName + '\'' +
                 ", status='" + status + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SystemUser)) return false;
+        SystemUser that = (SystemUser) o;
+        return Objects.equals(username, that.username)
+                && Objects.equals(userRole, that.userRole)
+                && Objects.equals(employeeName, that.employeeName)
+                && Objects.equals(status, that.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(username, userRole, employeeName, status);
     }
 }

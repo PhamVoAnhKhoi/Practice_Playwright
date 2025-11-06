@@ -36,4 +36,8 @@ public class ConfigReader {
         return getProperty("ADMINPASSWORD");
     }
 
+    public static String getExcelURL(){
+        return getProperty("EXCELURL");
+    }
+
 }
