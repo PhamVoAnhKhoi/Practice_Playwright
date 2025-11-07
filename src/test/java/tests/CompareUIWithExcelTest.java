@@ -56,7 +56,8 @@ public class CompareUIWithExcelTest extends AuthenticatedBaseTest {
         createUser();
         verifyCreateUserSuccess();
 
-        userManagementPage.navigateToAdminPage();
+        searchUser();
+
         String excelFilePath = ConfigReader.getExcelURL();
 
         // Step 1: Extract data from UI
@@ -70,10 +71,13 @@ public class CompareUIWithExcelTest extends AuthenticatedBaseTest {
         // Step 3: Edit user information in table
         editUserInfo();
 
-        userManagementPage.navigateToAdminPage();
+        searchUser();
+
+
         // Step 4: Read Excel data
         List<SystemUser> excelUsers = ExcelReader.readUsersFromExcel(excelFilePath);
         log.info("Loaded {} users from Excel file.", excelUsers.size());
+
 
         // Step 5: Find mismatches
         List<String> mismatchedUsernames = new ArrayList<>();
@@ -119,6 +123,12 @@ public class CompareUIWithExcelTest extends AuthenticatedBaseTest {
         verifyDeleteEmployeeSuccess();
     }
 
+    private void searchUser(){
+        userManagementPage.navigateToAdminPage();
+        userManagementPage.inputSearchUsername(uniqueUserName);
+        userManagementPage.clickSearchButton();
+        userManagementPage.waitForSearchResult();
+    }
     private boolean isMismatch(SystemUser ui, SystemUser excel){
         return !ui.getUsername().equalsIgnoreCase(excel.getUsername()) ||
                 !ui.getEmployeeName().equalsIgnoreCase(excel.getEmployeeName()) ||
