@@ -72,14 +72,16 @@ public class CompareUIWithExcelTest extends AuthenticatedBaseTest {
         editUserInfo();
 
         searchUser();
+        // Step 4: Extract data from UI after edit
+        uiUsers = userManagementPage.extractAllUsersFromUITable();
+        log.info("Extracted {} users from UI table.", uiUsers.size());
 
-
-        // Step 4: Read Excel data
+        // Step 5: Read Excel data
         List<SystemUser> excelUsers = ExcelReader.readUsersFromExcel(excelFilePath);
         log.info("Loaded {} users from Excel file.", excelUsers.size());
 
 
-        // Step 5: Find mismatches
+        // Step 6: Find mismatches
         List<String> mismatchedUsernames = new ArrayList<>();
 
         for (SystemUser excelUser : excelUsers) {
@@ -100,14 +102,14 @@ public class CompareUIWithExcelTest extends AuthenticatedBaseTest {
             }
         }
 
-        // Step 6: Highlight mismatches in Excel
+        // Step 7: Highlight mismatches in Excel
         if (!mismatchedUsernames.isEmpty()) {
             ExcelHighlighter.highlightRows(excelFilePath, mismatchedUsernames);
             log.error("Mismatch detected. Highlighted rows in Excel.");
             ScreenshotHelper.captureAndAttach(page,"UI Table Mismatch");
         }
 
-        // Step 7: Assert
+        // Step 8: Assert
         assertThat(mismatchedUsernames.isEmpty())
                 .as("Mismatch found — highlighted in Excel")
                 .isTrue();
