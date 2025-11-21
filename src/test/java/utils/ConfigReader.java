@@ -40,6 +40,10 @@ public class ConfigReader {
         return getProperty("EXCELURL");
     }
 
+    public static String getDBTableName() {
+        return ConfigReader.getProperty("TABLENAME");
+    }
+
     public static String getDBUrl() {
         return ConfigReader.getProperty("DBURL");
     }

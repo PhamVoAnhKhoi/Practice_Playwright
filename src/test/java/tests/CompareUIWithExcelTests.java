@@ -146,7 +146,7 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
         userManagementPage.clickSearchButton();
         userManagementPage.waitForSearchResult();
         userManagementPage.deleteUser(uniqueUserName);
-        AssertionsForClassTypes.assertThat(userManagementPage.confirmDeleteNotificationIsVisible())
+        assertThat(userManagementPage.confirmDeleteNotificationIsVisible())
                 .as("Confirm delete notification must be visible")
                 .isTrue();
         userManagementPage.confirmDelete();

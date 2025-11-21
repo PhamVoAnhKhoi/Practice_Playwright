@@ -9,10 +9,10 @@ import java.util.List;
 
 public class UserDAO {
 
-    public static List<SystemUser> getAllUsersFromDB() {
+    public static List<SystemUser> getAllUsersFromDB(String tableName) {
         List<SystemUser> users = new ArrayList<>();
 
-        String query = "SELECT username, user_role, employee_name, status FROM system_users";
+        String query = "SELECT username, user_role, employee_name, status FROM " + tableName;
 
         try {
             ResultSet rs = DBUtils.executeQuery(query);
@@ -33,9 +33,9 @@ public class UserDAO {
         return users;
     }
 
-    public static SystemUser getUserByUsername(String username) {
-        String query = "SELECT username, user_role, employee_name, status FROM system_users " +
-                "WHERE username = '" + username + "'";
+    public static SystemUser getUserByUsername(String username, String tableName) {
+        String query = "SELECT username, user_role, employee_name, status FROM " + tableName +
+                " WHERE username = '" + username + "'";
 
         try {
             ResultSet rs = DBUtils.executeQuery(query);
@@ -56,9 +56,9 @@ public class UserDAO {
         return null;
     }
 
-    public static void insertUser(SystemUser user) {
+    public static void insertUser(SystemUser user, String tableName) {
         String sql = String.format(
-                "INSERT INTO system_users (username, user_role, employee_name, status) " +
+                "INSERT INTO " + tableName + " (username, user_role, employee_name, status) " +
                         "VALUES ('%s', '%s', '%s', '%s')",
                 user.getUsername(),
                 user.getUserRole(),
@@ -69,8 +69,8 @@ public class UserDAO {
         DBUtils.executeUpdate(sql);
     }
 
-    public static void deleteUserByUsername(String username) {
-        String sql = "DELETE FROM system_users WHERE username = '" + username + "'";
+    public static void deleteUserByUsername(String username, String tableName) {
+        String sql = "DELETE FROM " + tableName + " WHERE username = '" + username + "'";
         DBUtils.executeDelete(sql);
     }
 

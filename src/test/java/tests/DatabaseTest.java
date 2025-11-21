@@ -11,11 +11,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import pages.AddEmployeePage;
-import pages.AddUserPage;
-import pages.PIMPage;
-import pages.UserManagementPage;
+import pages.*;
 import utils.AccountData;
+import utils.ConfigReader;
+import utils.DBSetupUtils;
 import utils.SystemUser;
 import DAO.UserDAO;
 
@@ -25,22 +24,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class DatabaseTest extends AuthenticatedBaseTest {
-    private static final Logger log = LoggerFactory.getLogger(UserLifecycleTests.class);
+    private static final Logger log = LoggerFactory.getLogger(DatabaseTest.class);
     UserManagementPage userManagementPage;
     AddUserPage addUserPage;
     PIMPage pimPage;
     AddEmployeePage addEmployeePage;
+    EditUserPage editUserPage;
     String uniqueFirstName;
     String uniqueMiddleName;
     String uniqueLastName;
     String uniqueEmployeeName;
     String uniqueUserName;
     String uniqueUserId;
+    String tableName = ConfigReader.getDBTableName();
 
     @BeforeClass
     public void prepareTestData(){
         log.info("======== Generate unique data for User ========");
         createUniqueData();
+        DBSetupUtils.createUserTableIfNotExists(tableName);
     }
 
     @BeforeMethod
@@ -49,6 +51,7 @@ public class DatabaseTest extends AuthenticatedBaseTest {
         addUserPage = new AddUserPage(page);
         pimPage = new PIMPage(page);
         addEmployeePage = new AddEmployeePage(page);
+        editUserPage = new EditUserPage(page);
     }
 
     @Test
@@ -69,18 +72,27 @@ public class DatabaseTest extends AuthenticatedBaseTest {
         assertThat(uiUser)
                 .as("User must exist in Table")
                 .isNotNull();
-        log.info("[UI] User extracted: " + uiUser);
+        log.info("[UI] User extracted before edit: " + uiUser);
 
         //Insert user into PostgreSQL
-        UserDAO.insertUser(uiUser);
+        UserDAO.insertUser(uiUser, tableName);
         log.info("[DB] Inserted user: " + uiUser.getUsername());
 
         //Verify user exists in DB
-        SystemUser dbUser = UserDAO.getUserByUsername(uniqueUserName);
+        SystemUser dbUser = UserDAO.getUserByUsername(uniqueUserName, tableName);
         assertThat(dbUser)
                 .as("User must exist in Database")
                 .isNotNull();
 
+        editUserInfo();
+
+        searchUser();
+
+        uiUser = userManagementPage.getUserDetailsFromTable(uniqueUserName);
+        assertThat(uiUser)
+                .as("User must exist in Table")
+                .isNotNull();
+        log.info("[UI] User extracted after edited: " + uiUser);
         assertUserEquals(uiUser,dbUser);
 
         log.info("[DB] Verified user: " + dbUser);
@@ -88,8 +100,7 @@ public class DatabaseTest extends AuthenticatedBaseTest {
 
     @AfterMethod
     public void deleteEmployeeAndUser(){
-        deleteUserInDatabase();
-        verifyDeleteUserInDatabase();
+        DBSetupUtils.dropUserTableIfExists(tableName);
         deleteUser();
         verifyDeleteUserSuccess();
         deleteEmployee();
@@ -203,18 +214,13 @@ public class DatabaseTest extends AuthenticatedBaseTest {
         userManagementPage.waitForSearchResult();
     }
 
-    //Clean up test data
-    private void deleteUserInDatabase(){
-        UserDAO.deleteUserByUsername(uniqueUserName);
-        log.info("Deleted user in DB: " + uniqueUserName);
-    }
-
-    private void verifyDeleteUserInDatabase(){
-        SystemUser deletedUser = UserDAO.getUserByUsername(uniqueUserName);
-        assertThat(deletedUser)
-                .as("User should be removed from DB")
-                .isNull();
-        log.info("Delete user in DB successfully");
+    private void editUserInfo(){
+        log.info("======== Edit user ========");
+        searchUser();
+        userManagementPage.navigateToEditUserPage(uniqueUserName);
+        editUserPage.selectStatus();
+        editUserPage.clickSaveButton();
+        ScreenshotHelper.captureAndAttach(page,"Edit Status User");
     }
 
     private void deleteUser(){
@@ -224,7 +230,7 @@ public class DatabaseTest extends AuthenticatedBaseTest {
         userManagementPage.clickSearchButton();
         userManagementPage.waitForSearchResult();
         userManagementPage.deleteUser(uniqueUserName);
-        AssertionsForClassTypes.assertThat(userManagementPage.confirmDeleteNotificationIsVisible())
+        assertThat(userManagementPage.confirmDeleteNotificationIsVisible())
                 .as("Confirm delete notification must be visible")
                 .isTrue();
         userManagementPage.confirmDelete();

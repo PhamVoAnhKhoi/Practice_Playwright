@@ -1,12 +1,16 @@
 package utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tests.UserLifecycleTests;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
     private static Connection connection;
-
+    private static final Logger log = LoggerFactory.getLogger(DBConnection.class);
     public static Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
@@ -28,7 +32,7 @@ public class DBConnection {
                 connection.close();
             }
         } catch (SQLException e) {
-            System.out.println("Cannot close connection: " + e.getMessage());
+            log.info("Cannot close connection: " + e.getMessage());
         }
     }
 }
