@@ -2,7 +2,7 @@ package base;
 
 import org.testng.annotations.BeforeMethod;
 import utils.ConfigReader;
-import utils.PlaywrightFactory;
+import factory.PlaywrightFactory;
 
 public class AuthenticatedBaseTest extends BaseTest {
 

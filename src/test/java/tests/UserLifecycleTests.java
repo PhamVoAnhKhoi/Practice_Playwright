@@ -11,8 +11,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.*;
 import utils.AccountData;
-import utils.DataHelper;
-import utils.ScreenshotHelper;
+import helpers.DataHelper;
+import helpers.ScreenshotHelper;
 import utils.SystemUser;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

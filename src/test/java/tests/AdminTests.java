@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.UserManagementPage;
-import utils.ScreenshotHelper;
+import helpers.ScreenshotHelper;
 import utils.SystemUser;
 
 import java.util.List;

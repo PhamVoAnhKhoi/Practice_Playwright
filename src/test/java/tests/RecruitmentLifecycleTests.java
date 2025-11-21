@@ -1,7 +1,6 @@
 package tests;
 
 import base.AuthenticatedBaseTest;
-import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.slf4j.Logger;
@@ -10,8 +9,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.*;
-import utils.DataHelper;
-import utils.ScreenshotHelper;
+import helpers.DataHelper;
+import helpers.ScreenshotHelper;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

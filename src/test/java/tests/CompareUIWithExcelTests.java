@@ -1,5 +1,7 @@
 package tests;
 import base.AuthenticatedBaseTest;
+import helpers.DataHelper;
+import helpers.ScreenshotHelper;
 import io.qameta.allure.*;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.slf4j.Logger;
@@ -12,12 +14,11 @@ import pages.*;
 import utils.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CompareUIWithExcelTest extends AuthenticatedBaseTest {
-    private static final Logger log = LoggerFactory.getLogger(CompareUIWithExcelTest.class);
+public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
+    private static final Logger log = LoggerFactory.getLogger(CompareUIWithExcelTests.class);
     PIMPage pimPage;
     AddEmployeePage addEmployeePage;
     UserManagementPage userManagementPage;
@@ -203,14 +204,25 @@ public class CompareUIWithExcelTest extends AuthenticatedBaseTest {
 
     private void editUserInfo(){
         log.info("======== Edit user ========");
-        userManagementPage.navigateToAdminPage();
-        userManagementPage.inputSearchUsername(uniqueUserName);
-        userManagementPage.clickSearchButton();
-        userManagementPage.waitForSearchResult();
+        searchUser();
         userManagementPage.navigateToEditUserPage(uniqueUserName);
         editUserPage.selectStatus();
         editUserPage.clickSaveButton();
         ScreenshotHelper.captureAndAttach(page,"Edit Status User");
+    }
+
+    private void verifyEditUserInfoSuccess(){
+        log.info("======== Verify edit user success ========");
+        userManagementPage.navigateToAdminPage();
+        searchUser();
+        AssertionsForClassTypes.assertThat(userManagementPage.isUserPresentInTable(uniqueUserName))
+                .as("User search result should return exactly one record")
+                .isTrue();
+
+        SystemUser actualUser = userManagementPage.getUserDetailsFromTable(uniqueUserName);
+        AssertionsForClassTypes.assertThat(actualUser).as("User must exist in table").isNotNull();
+        AssertionsForClassTypes.assertThat(actualUser.getStatus()).isEqualTo(AccountData.USERSTATUS);
+        log.info("Verified user details: " + actualUser);
     }
 
     private void verifyCreateUserSuccess(){

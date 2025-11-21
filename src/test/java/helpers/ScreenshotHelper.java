@@ -1,4 +1,4 @@
-package utils;
+package helpers;
 
 import com.microsoft.playwright.Page;
 import io.qameta.allure.Allure;

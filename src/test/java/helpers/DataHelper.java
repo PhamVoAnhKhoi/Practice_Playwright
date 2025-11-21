@@ -1,7 +1,6 @@
-package utils;
+package helpers;
 
 import java.security.SecureRandom;
-import java.util.UUID;
 
 public class DataHelper {
     private DataHelper(){}
@@ -11,6 +10,7 @@ public class DataHelper {
     }
 
     private static final String CHAR_POOL =
+//            "abcdefghijklmnopqrstuvwxyz" +  // chữ thường
 //            "abcdefghijklmnopqrstuvwxyz" +  // chữ thường
 //            "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +  // chữ hoa
             "0123456789"; //+                  // số

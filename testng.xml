@@ -10,7 +10,8 @@
             <class name = "tests.AdminTests"/>
             <class name="tests.UserLifecycleTests"/>
             <class name="tests.RecruitmentLifecycleTests"/>
-            <class name="tests.CompareUIWithExcelTest"></class>
+            <class name="tests.CompareUIWithExcelTests"></class>
+            <class name="tests.DatabaseTest"></class>
         </classes>
     </test>
 </suite>

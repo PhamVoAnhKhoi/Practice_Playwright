@@ -1,9 +1,9 @@
-package utils;
+package factory;
 
 import com.microsoft.playwright.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tests.AdminTests;
+import utils.ConfigReader;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

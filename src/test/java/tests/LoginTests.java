@@ -10,7 +10,7 @@ import utils.AccountData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.ConfigReader;
-import utils.ScreenshotHelper;
+import helpers.ScreenshotHelper;
 
 import java.util.List;
 
