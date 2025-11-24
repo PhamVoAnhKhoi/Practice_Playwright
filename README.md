@@ -37,7 +37,14 @@ The project adopts the Page Object Model (POM) design pattern to improve scalabi
 │         │     └── utils
 │         │           ├── AccountData.java
 │         │           ├── ConfigReader.java
-│         │           └── PlaywrightFactory.java
+│         │           ├── DBConnection.java
+│         │           ├── DBSetupUtils.java
+│         │           ├── DBUtils.java
+│         │           ├── ExcelHighlighter.java
+│         │           ├── ExcelReader.java
+│         │           ├── ExcelWriter.java
+│         │           ├── SetupAuthState.java
+│         │           └── SystemUser.java
 │         └── resources
 │                └──config.properties
 ├── pom.xml
@@ -59,6 +66,20 @@ The project adopts the Page Object Model (POM) design pattern to improve scalabi
 2.  **Install Dependencies:**
     The project uses Maven for dependency management. All dependencies are listed in `pom.xml` and will be downloaded automatically.
 
+3.  **Config PostgreSQL Database**
+    - **Setup properties for database:**
+    ```sh
+    Host name/address: [your-host-name]
+    Port: [your-port]
+    Username: [your-username]
+    ```
+    - **Setup file config.properties:**
+    ```sh
+    DBURL = jdbc:postgresql://[your-host-name]:[your-port]/[your-username]
+    DBUSERNAME = [your-username]
+    DBPASSWORD = [your-user-password]
+    TABLENAME = [your-table-name]
+    ```
 ## Running Tests
 The framework uses TestNG as the test runner, executed via Maven.
 
