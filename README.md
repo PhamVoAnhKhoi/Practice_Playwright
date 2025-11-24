@@ -27,7 +27,17 @@ The project adopts the Page Object Model (POM) design pattern to improve scalabi
 │    └── test
 │         ├── java
 │         │     ├── base
+│         │     │     ├── AuthenticateBaseTest.java
 │         │     │     └── BaseTest.java   
+│         │     ├── DAO
+│         │     │     └── UserDAO.java
+│         │     ├── factory
+│         │     │     └── PlaywrightFactory.java
+│         │     ├── helpers
+│         │     │     ├── DataHelper.java
+│         │     │     └── ScreenshotHelper.java
+│         │     ├── listeners
+│         │     │     └── TestListener.java
 │         │     ├── pages
 │         │     │     ├── AdminPage.java
 │         │     │     └── LoginPage.java
@@ -53,6 +63,10 @@ The project adopts the Page Object Model (POM) design pattern to improve scalabi
 ```
 
 * **base:** Contains the base test class for setup and teardown logic (browser/session management).
+* **DAO:** Contains Database Access Object for performing CRUD operations on database entities.
+* **factory:** Manages Playwright initialization and browser configuration.
+* **helper:** Utility classes that provide common reusable functions used across tests.
+* **listaners:** TestNG listeners that handle test events.
 * **pages** Contains Page Object classes, wrapping UI elements and interaction methods.
 * **tests** Contains TestNG test classes and assertion logic.
 * **ulils** Contains helper classes for configuration, test data, and browser management.
