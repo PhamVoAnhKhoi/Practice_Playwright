@@ -141,7 +141,8 @@ The project adopts the Page Object Model (POM) design pattern to improve scalabi
    `your-port`: Retrieved from the **Post** field at **Connection** in the Server properties.  
    `your-table-name`: Your table name which you want to create
 ## Running Tests
-The framework uses TestNG as the test runner and Playwright authentication state for all admin-related testcases.
+The framework uses TestNG as the test runner and Playwright authentication state for all admin-related testcases.  
+Note: Testcase `DemoFailureTests` just only run when you want to test feature `Capture screanshot when faifure`.
 
 Before running any test except `LoginTests`, you must generate a valid file (`auth.json`) using the `utils.SetupAuthState`.  
 This file stores the authenticated session so tests can run without logging in again.
@@ -149,7 +150,7 @@ This file stores the authenticated session so tests can run without logging in a
 1.  **Generate Authentication State**
     Open a terminal in the project root directory and run `SetupAuthState` class:
     ```sh
-    mvn -Dexec.mainClass="utils.SetupAuthState" -Dexec.cleanupDaemonThreads=false exec:java  
+    mvn -Dexec.mainClass="utils.SetupAuthState"            
     ```
     Note: Perform the steps based on the instructions logged in the Terminal.
 2. **Run the Entire Test Suite:**

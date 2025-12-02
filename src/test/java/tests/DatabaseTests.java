@@ -21,8 +21,8 @@ import DAO.UserDAO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class DatabaseTest extends AuthenticatedBaseTest {
-    private static final Logger log = LoggerFactory.getLogger(DatabaseTest.class);
+public class DatabaseTests extends AuthenticatedBaseTest {
+    private static final Logger log = LoggerFactory.getLogger(DatabaseTests.class);
     UserManagementPage userManagementPage;
     AddUserPage addUserPage;
     PIMPage pimPage;
