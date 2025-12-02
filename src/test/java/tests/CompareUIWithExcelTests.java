@@ -50,72 +50,54 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
     @Severity(SeverityLevel.CRITICAL)
     @Description("Verify that all users in Excel match those in the UI table (and vice versa)")
     public void compareExcelAndUITableData() {
-
         createEmployee();
         verifyCreateEmployeeSuccess();
-
         createUser();
         verifyCreateUserSuccess();
-
         searchUser();
-
         String excelFilePath = ConfigReader.getExcelURL();
         String clonedExcelFile = ExcelUtils.createExcelClone(excelFilePath);
-
         // Step 1: Extract data from UI
         List<SystemUser> uiUsers = userManagementPage.extractAllUsersFromUITable();
         log.info("Extracted {} users from UI table.", uiUsers.size());
-
         // Step 2: If Excel is null => Override data UI in Excel
         ExcelWriter.writeUsersToExcelIfEmpty(clonedExcelFile, uiUsers);
         log.info("Save {} users from UI to Excel" , uiUsers.size());
-
         // Step 3: Edit user information in table
         editUserInfo();
-
         searchUser();
         // Step 4: Extract data from UI after edit
         uiUsers = userManagementPage.extractAllUsersFromUITable();
         log.info("Extracted {} users from UI table.", uiUsers.size());
-
         // Step 5: Read Excel data
         List<SystemUser> excelUsers = ExcelReader.readUsersFromExcel(clonedExcelFile);
         log.info("Loaded {} users from Excel file.", excelUsers.size());
-
-
         // Step 6: Find mismatches
         List<String> mismatchedUsernames = new ArrayList<>();
-
         for (SystemUser excelUser : excelUsers) {
             Optional<SystemUser> matchFromUI = uiUsers.stream()
-                    .filter(u -> u.getUsername().equalsIgnoreCase(excelUser.getUsername()))
+                    .filter(u -> u.getUsername()
+                            .equalsIgnoreCase(excelUser.getUsername()))
                     .findFirst();
-
             if (matchFromUI.isEmpty()) {
                 mismatchedUsernames.add(excelUser.getUsername());
                 continue;
             }
-
             SystemUser uiUser = matchFromUI.get();
-
-
             if (isMismatch(uiUser,excelUser)) {
                 mismatchedUsernames.add(excelUser.getUsername());
             }
         }
-
         // Step 7: Highlight mismatches in Excel
         if (!mismatchedUsernames.isEmpty()) {
             ExcelHighlighter.highlightRows(clonedExcelFile, mismatchedUsernames);
             log.error("Mismatch detected. Highlighted rows in Excel.");
             ScreenshotHelper.captureAndAttach(page,"UI Table Mismatch");
         }
-
         // Step 8: Assert
         assertThat(mismatchedUsernames.isEmpty())
                 .as("Mismatch found — highlighted in Excel")
                 .isFalse();
-
     }
 
     @AfterMethod

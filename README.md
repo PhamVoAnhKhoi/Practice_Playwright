@@ -127,8 +127,8 @@ The project adopts the Page Object Model (POM) design pattern to improve scalabi
           CREATE USER test_user WITH ENCRYPTED PASSWORD 'your_password';
           ```
           Note:  
-          test_user: Your username  
-          your_password: Your user password
+          `test_user`: Your username  
+          `your_password`: Your user password
 6. **Setup file config.properties**
     ```sql
     DBURL = jdbc:postgresql://[your-host-name]:[your-port]/[your-username]
