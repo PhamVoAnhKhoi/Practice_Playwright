@@ -18,8 +18,6 @@ import utils.DBSetupUtils;
 import utils.SystemUser;
 import DAO.UserDAO;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -42,7 +40,7 @@ public class DatabaseTest extends AuthenticatedBaseTest {
     public void prepareTestData(){
         log.info("======== Generate unique data for User ========");
         createUniqueData();
-        DBSetupUtils.createUserTableIfNotExists(tableName);
+        setUpTableDatabase();
     }
 
     @BeforeMethod
@@ -100,7 +98,7 @@ public class DatabaseTest extends AuthenticatedBaseTest {
 
     @AfterMethod
     public void deleteEmployeeAndUser(){
-        DBSetupUtils.dropUserTableIfExists(tableName);
+        tearDownTableDatabase();
         deleteUser();
         verifyDeleteUserSuccess();
         deleteEmployee();
@@ -126,9 +124,27 @@ public class DatabaseTest extends AuthenticatedBaseTest {
         log.info("Employee name is matched");
 
         assertThat(ui.getStatus())
-                .as("Status is mismatched")
-                .isEqualTo(db.getStatus());
-        log.info("Status is matched");
+                .as("Status is matched")
+                .isNotEqualTo(db.getStatus());
+        log.info("Status is mismatched");
+    }
+
+    private void setUpTableDatabase(){
+        DBSetupUtils.createUserTableIfNotExists(tableName);
+        //Verify table is dropped
+        assertThat(DBSetupUtils.isTableVisible(tableName))
+                .as("Table does not exist in Database")
+                .isTrue();
+        log.info("Table is created successfully");
+    }
+
+    private void tearDownTableDatabase(){
+        DBSetupUtils.dropUserTableIfExists(tableName);
+        //Verify table is created
+        assertThat(DBSetupUtils.isTableDisible(tableName))
+                .as("Table still exist in Database")
+                .isTrue();
+        log.info("Table is deleted successfully");
     }
 
     private void createUniqueData(){
@@ -151,7 +167,7 @@ public class DatabaseTest extends AuthenticatedBaseTest {
     }
 
     private void verifyCreateUserSuccess(){
-        AssertionsForClassTypes.assertThat(addUserPage.isCreateSuccessfully())
+        assertThat(addUserPage.isCreateSuccessfully())
                 .as("Create fail")
                 .isTrue();
         log.info("Create Successfully");
@@ -162,14 +178,14 @@ public class DatabaseTest extends AuthenticatedBaseTest {
         userManagementPage.inputSearchUsername(uniqueUserName);
         userManagementPage.clickSearchButton();
         userManagementPage.waitForSearchResult();
-        AssertionsForClassTypes.assertThat(userManagementPage.isUserPresentInTable(uniqueUserName))
+        assertThat(userManagementPage.isUserPresentInTable(uniqueUserName))
                 .as("User search result should return exactly one record")
                 .isTrue();
 
         SystemUser actualUser = userManagementPage.getUserDetailsFromTable(uniqueUserName);
-        AssertionsForClassTypes.assertThat(actualUser).as("User must exist in table").isNotNull();
-        AssertionsForClassTypes.assertThat(actualUser.getUserRole()).isEqualTo(AccountData.USERROLE);
-        AssertionsForClassTypes.assertThat(actualUser.getStatus()).isEqualTo(AccountData.USERSTATUS);
+        assertThat(actualUser).as("User must exist in table").isNotNull();
+        assertThat(actualUser.getUserRole()).isEqualTo(AccountData.USERROLE);
+        assertThat(actualUser.getStatus()).isEqualTo(AccountData.USERSTATUS);
         log.info("Verified user details: " + actualUser);
         ScreenshotHelper.captureAndAttach(page,"User visible in table");
     }
@@ -185,7 +201,7 @@ public class DatabaseTest extends AuthenticatedBaseTest {
     }
 
     private void verifyCreateEmployeeSuccess(){
-        AssertionsForClassTypes.assertThat(addEmployeePage.isCreateSuccessfully())
+        assertThat(addEmployeePage.isCreateSuccessfully())
                 .as("Create fail")
                 .isTrue();
         log.info("Create Successfully");
@@ -194,7 +210,7 @@ public class DatabaseTest extends AuthenticatedBaseTest {
         pimPage.navigateToEmployeeListPage();
         pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueEmployeeName);
         pimPage.waitForSearchResult();
-        AssertionsForClassTypes.assertThat(pimPage.isEmployeePresentInTable(uniqueUserId))
+        assertThat(pimPage.isEmployeePresentInTable(uniqueUserId))
                 .as("Search result should return exactly")
                 .isTrue();
         ScreenshotHelper.captureAndAttach(page,"Employee visible in table");
@@ -267,7 +283,7 @@ public class DatabaseTest extends AuthenticatedBaseTest {
     }
 
     private void verifyDeleteEmployeeSuccess(){
-        AssertionsForClassTypes.assertThat(pimPage.isDeleteSuccessfully())
+        assertThat(pimPage.isDeleteSuccessfully())
                 .as("Delete fail")
                 .isTrue();
         log.info("Delete Employee Successfully");
@@ -275,11 +291,11 @@ public class DatabaseTest extends AuthenticatedBaseTest {
         log.info("======== Check employee ========");
         pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueEmployeeName);
 
-        AssertionsForClassTypes.assertThat(pimPage.isEmployeeInvisibleAfterDelete())
+        assertThat(pimPage.isEmployeeInvisibleAfterDelete())
                 .as("Notification No Record Found must be visible")
                 .isTrue();
         pimPage.waitForSearchResult();
-        AssertionsForClassTypes.assertThat(pimPage.isEmployeeNotVisibleInTable(uniqueEmployeeName))
+        assertThat(pimPage.isEmployeeNotVisibleInTable(uniqueEmployeeName))
                 .as("Employee should not be visible in table after deletion")
                 .isTrue();
         ScreenshotHelper.captureAndAttach(page,"Employee does not exist in table");

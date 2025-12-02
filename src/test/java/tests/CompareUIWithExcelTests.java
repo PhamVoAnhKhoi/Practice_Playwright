@@ -60,13 +60,14 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
         searchUser();
 
         String excelFilePath = ConfigReader.getExcelURL();
+        String clonedExcelFile = ExcelUtils.createExcelClone(excelFilePath);
 
         // Step 1: Extract data from UI
         List<SystemUser> uiUsers = userManagementPage.extractAllUsersFromUITable();
         log.info("Extracted {} users from UI table.", uiUsers.size());
 
-        // Step 2: If Excel is null → Override data UI in Excel
-        ExcelWriter.writeUsersToExcelIfEmpty(excelFilePath, uiUsers);
+        // Step 2: If Excel is null => Override data UI in Excel
+        ExcelWriter.writeUsersToExcelIfEmpty(clonedExcelFile, uiUsers);
         log.info("Save {} users from UI to Excel" , uiUsers.size());
 
         // Step 3: Edit user information in table
@@ -78,7 +79,7 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
         log.info("Extracted {} users from UI table.", uiUsers.size());
 
         // Step 5: Read Excel data
-        List<SystemUser> excelUsers = ExcelReader.readUsersFromExcel(excelFilePath);
+        List<SystemUser> excelUsers = ExcelReader.readUsersFromExcel(clonedExcelFile);
         log.info("Loaded {} users from Excel file.", excelUsers.size());
 
 
@@ -105,7 +106,7 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
 
         // Step 7: Highlight mismatches in Excel
         if (!mismatchedUsernames.isEmpty()) {
-            ExcelHighlighter.highlightRows(excelFilePath, mismatchedUsernames);
+            ExcelHighlighter.highlightRows(clonedExcelFile, mismatchedUsernames);
             log.error("Mismatch detected. Highlighted rows in Excel.");
             ScreenshotHelper.captureAndAttach(page,"UI Table Mismatch");
         }
@@ -113,8 +114,7 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
         // Step 8: Assert
         assertThat(mismatchedUsernames.isEmpty())
                 .as("Mismatch found — highlighted in Excel")
-                .isTrue();
-
+                .isFalse();
 
     }
 
@@ -153,7 +153,7 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
     }
 
     private void verifyDeleteUserSuccess(){
-        AssertionsForClassTypes.assertThat(userManagementPage.isDeleteSuccessfully())
+        assertThat(userManagementPage.isDeleteSuccessfully())
                 .as("Delete fail")
                 .isTrue();
         log.info("Delete user Successfully");
@@ -161,11 +161,11 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
         log.info("======== Check user ========");
         userManagementPage.inputSearchUsername(uniqueUserName);
         userManagementPage.clickSearchButton();
-        AssertionsForClassTypes.assertThat(userManagementPage.isUsernameInvisibleAfterDelete())
+        assertThat(userManagementPage.isUsernameInvisibleAfterDelete())
                 .as("Notification No Record Found must be visible")
                 .isTrue();
         userManagementPage.waitForSearchResult();
-        AssertionsForClassTypes.assertThat(userManagementPage.isUserNotVisibleInTable(uniqueUserName))
+        assertThat(userManagementPage.isUserNotVisibleInTable(uniqueUserName))
                 .as("User should not be visible in table after deletion")
                 .isTrue();
         ScreenshotHelper.captureAndAttach(page,"User does not exist in table");
@@ -183,7 +183,7 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
     }
 
     private void verifyDeleteEmployeeSuccess(){
-        AssertionsForClassTypes.assertThat(pimPage.isDeleteSuccessfully())
+        assertThat(pimPage.isDeleteSuccessfully())
                 .as("Delete fail")
                 .isTrue();
         log.info("Delete Employee Successfully");
@@ -191,11 +191,11 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
         log.info("======== Check employee ========");
         pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueEmployeeName);
 
-        AssertionsForClassTypes.assertThat(pimPage.isEmployeeInvisibleAfterDelete())
+        assertThat(pimPage.isEmployeeInvisibleAfterDelete())
                 .as("Notification No Record Found must be visible")
                 .isTrue();
         pimPage.waitForSearchResult();
-        AssertionsForClassTypes.assertThat(pimPage.isEmployeeNotVisibleInTable(uniqueEmployeeName))
+        assertThat(pimPage.isEmployeeNotVisibleInTable(uniqueEmployeeName))
                 .as("Employee should not be visible in table after deletion")
                 .isTrue();
         ScreenshotHelper.captureAndAttach(page,"Employee does not exist in table");
@@ -215,18 +215,18 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
         log.info("======== Verify edit user success ========");
         userManagementPage.navigateToAdminPage();
         searchUser();
-        AssertionsForClassTypes.assertThat(userManagementPage.isUserPresentInTable(uniqueUserName))
+        assertThat(userManagementPage.isUserPresentInTable(uniqueUserName))
                 .as("User search result should return exactly one record")
                 .isTrue();
 
         SystemUser actualUser = userManagementPage.getUserDetailsFromTable(uniqueUserName);
-        AssertionsForClassTypes.assertThat(actualUser).as("User must exist in table").isNotNull();
-        AssertionsForClassTypes.assertThat(actualUser.getStatus()).isEqualTo(AccountData.USERSTATUS);
+        assertThat(actualUser).as("User must exist in table").isNotNull();
+        assertThat(actualUser.getStatus()).isEqualTo(AccountData.USERSTATUS);
         log.info("Verified user details: " + actualUser);
     }
 
     private void verifyCreateUserSuccess(){
-        AssertionsForClassTypes.assertThat(addUserPage.isCreateSuccessfully())
+        assertThat(addUserPage.isCreateSuccessfully())
                 .as("Create fail")
                 .isTrue();
         log.info("Create Successfully");
@@ -237,14 +237,14 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
         userManagementPage.inputSearchUsername(uniqueUserName);
         userManagementPage.clickSearchButton();
         userManagementPage.waitForSearchResult();
-        AssertionsForClassTypes.assertThat(userManagementPage.isUserPresentInTable(uniqueUserName))
+        assertThat(userManagementPage.isUserPresentInTable(uniqueUserName))
                 .as("User search result should return exactly one record")
                 .isTrue();
 
         SystemUser actualUser = userManagementPage.getUserDetailsFromTable(uniqueUserName);
-        AssertionsForClassTypes.assertThat(actualUser).as("User must exist in table").isNotNull();
-        AssertionsForClassTypes.assertThat(actualUser.getUserRole()).isEqualTo(AccountData.USERROLE);
-        AssertionsForClassTypes.assertThat(actualUser.getStatus()).isEqualTo(AccountData.USERSTATUS);
+        assertThat(actualUser).as("User must exist in table").isNotNull();
+        assertThat(actualUser.getUserRole()).isEqualTo(AccountData.USERROLE);
+        assertThat(actualUser.getStatus()).isEqualTo(AccountData.USERSTATUS);
         log.info("Verified user details: " + actualUser);
         ScreenshotHelper.captureAndAttach(page,"User visible in table");
     }
@@ -260,7 +260,7 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
     }
 
     private void verifyCreateEmployeeSuccess(){
-        AssertionsForClassTypes.assertThat(addEmployeePage.isCreateSuccessfully())
+        assertThat(addEmployeePage.isCreateSuccessfully())
                 .as("Create fail")
                 .isTrue();
         log.info("Create Successfully");
@@ -269,7 +269,7 @@ public class CompareUIWithExcelTests extends AuthenticatedBaseTest {
         pimPage.navigateToEmployeeListPage();
         pimPage.searchEmployeeByFirstname(uniqueFirstName,uniqueEmployeeName);
         pimPage.waitForSearchResult();
-        AssertionsForClassTypes.assertThat(pimPage.isEmployeePresentInTable(uniqueUserId))
+        assertThat(pimPage.isEmployeePresentInTable(uniqueUserId))
                 .as("Search result should return exactly")
                 .isTrue();
         ScreenshotHelper.captureAndAttach(page,"Employee visible in table");

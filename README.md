@@ -17,7 +17,9 @@ Before running the tests, make sure you have:
 - **TestNG: 7.10.2+**
 - **Assert: 3.26.3**
 - **Playwright: 1.55.0+**
+- **Playwright Browsers Installed** (Chromium, Firefox, WebKit)
 - **Allure Commandline: 2.29.0+** (for report generation)
+- **PostgreSQL: 17.5-1**
 
 ## Project Structure
 The project adopts the Page Object Model (POM) design pattern to improve scalability and maintainability.
@@ -65,7 +67,7 @@ The project adopts the Page Object Model (POM) design pattern to improve scalabi
 * **base:** Contains the base test class for setup and teardown logic (browser/session management).
 * **DAO:** Contains Database Access Object for performing CRUD operations on database entities.
 * **factory:** Manages Playwright initialization and browser configuration.
-* **helper:** Utility classes that provide common reusable functions used across tests.
+* **helpers:** Utility classes that provide common reusable functions used across tests.
 * **listaners:** TestNG listeners that handle test events.
 * **pages** Contains Page Object classes, wrapping UI elements and interaction methods.
 * **tests** Contains TestNG test classes and assertion logic.
@@ -79,31 +81,83 @@ The project adopts the Page Object Model (POM) design pattern to improve scalabi
     ```
 2.  **Install Dependencies:**
     The project uses Maven for dependency management. All dependencies are listed in `pom.xml` and will be downloaded automatically.
-
-3.  **Config PostgreSQL Database**
-    - **Setup properties for database:**
     ```sh
-    Host name/address: [your-host-name]
-    Port: [your-port]
-    Username: [your-username]
+    mvn clean install
     ```
-    - **Setup file config.properties:**
+3.  **Install Playwright Browsers**
     ```sh
+    npx playwright install
+    ```
+4.  **Setup file config.properties:**
+    Most of the tests require a pre-authenticated session. To generate the auth.json file:
+    ```sh
+    //Run SetupAuthState.java to login once and save auth state
+    public class SetupAuthState {
+      public static void main(String[] args) {
+          // Setup logic for browser
+          // Save authentication state in file auth.json
+      }
+    }
+    ```
+    It will create auth.json in root of project for reuse in tests.
+
+5. **Configure PostgreSQL Database**
+    1. **Install PostgreSQL (if not installed):** https://www.postgresql.org/download/
+    2. **Create Database:**
+        * **Open  pgAdmin 4 application**
+           ```sh
+            Servers → PostgreSQL 17 → Databases
+            ```
+          **Open Query Tool:**
+          Click right mouse at Databases → Select Query Tool
+        * **Run SQL query for creating Database**
+          ```sql
+          CREATE DATABASE orangehrm_test
+          WITH OWNER = postgres
+          ENCODING = 'UTF8'
+          CONNECTION LIMIT = -1;
+          ```
+          **Note:**  
+          `-1`: Number of users accessing  
+          `UTF8`: Character encoding  
+          `postgres`: Owner name  
+          `orangehrm_test`: Your database name
+        * **Create User (Optional)**
+          ```sql
+          CREATE USER test_user WITH ENCRYPTED PASSWORD 'your_password';
+          ```
+          Note:  
+          test_user: Your username  
+          your_password: Your user password
+6. **Setup file config.properties**
+    ```sql
     DBURL = jdbc:postgresql://[your-host-name]:[your-port]/[your-username]
     DBUSERNAME = [your-username]
     DBPASSWORD = [your-user-password]
     TABLENAME = [your-table-name]
     ```
+   **Note:**  
+   `your-host-name`: Retrieved from the **Host name/address** field at **Connection** in the Server properties.  
+   `your-port`: Retrieved from the **Post** field at **Connection** in the Server properties.  
+   `your-table-name`: Your table name which you want to create
 ## Running Tests
-The framework uses TestNG as the test runner, executed via Maven.
+The framework uses TestNG as the test runner and Playwright authentication state for all admin-related testcases.
 
-1.  **Run the Entire Test Suite:**
-    Open a terminal in the project root directory and run:
+Before running any test except `LoginTests`, you must generate a valid file (`auth.json`) using the `utils.SetupAuthState`.  
+This file stores the authenticated session so tests can run without logging in again.
+
+1.  **Generate Authentication State**
+    Open a terminal in the project root directory and run `SetupAuthState` class:
+    ```sh
+    mvn -Dexec.mainClass="utils.SetupAuthState" -Dexec.cleanupDaemonThreads=false exec:java  
+    ```
+    Note: Perform the steps based on the instructions logged in the Terminal.
+2. **Run the Entire Test Suite:**
+    Run all testcases following the test suit:
     ```sh
     mvn clean test
     ```
-
-2.  **Run a Specific Test Class:**
+3. **Run a Specific Test Class:**
     To run only the `LoginTests` class, for example:
     ```sh
     mvn clean test -Dtest=LoginTests
@@ -119,4 +173,9 @@ The project is integrated with Allure for detailed test reporting.
     ```sh
     mvn allure:serve
     ```
-
+3. **Generate standalone report**
+   ```sh
+   allure generate --single-file target/allure-results -o target/allure-report --clean 
+    ```
+   Report will be generated in folder: `target\allure-report`  
+4. **View Excel Results:** The Excel will be generated clone file in `target/test-output/excel-clones` after running relative testcases 

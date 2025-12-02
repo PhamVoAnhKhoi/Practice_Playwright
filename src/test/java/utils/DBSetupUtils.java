@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tests.UserLifecycleTests;
 
+import java.sql.ResultSet;
+
 public class DBSetupUtils {
 
     private static final Logger log = LoggerFactory.getLogger(DBSetupUtils.class);
@@ -30,6 +32,23 @@ public class DBSetupUtils {
         String sql = "TRUNCATE TABLE " + tableName + " RESTART IDENTITY CASCADE";
         DBUtils.executeUpdate(sql);
         log.info("User table truncated");
+    }
+
+    public static boolean isTableVisible(String tableName){
+        String sql = "SELECT true FROM information_schema.tables " +
+                "WHERE table_name = '" + tableName + "'";
+        try {
+            ResultSet rs = DBUtils.executeQuery(sql);
+            boolean exists = rs.next();
+            rs.close();
+            return exists;
+        } catch (Exception e) {
+            throw new RuntimeException("DB setup check failed: " + e.getMessage());
+        }
+    }
+
+    public static boolean isTableDisible(String tableName){
+        return !isTableVisible(tableName);
     }
 
 }
