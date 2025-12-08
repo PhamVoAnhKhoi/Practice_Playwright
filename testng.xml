@@ -12,7 +12,7 @@
             <class name="tests.RecruitmentLifecycleTests"/>
             <class name="tests.CompareUIWithExcelTests"></class>
             <class name="tests.DatabaseTests"></class>
-            <class name="tests.DemoFailureTests"></class>
+<!--            <class name="tests.DemoFailureTests"></class>-->
         </classes>
     </test>
 </suite>

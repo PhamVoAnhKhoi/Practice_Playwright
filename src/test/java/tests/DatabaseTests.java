@@ -71,6 +71,7 @@ public class DatabaseTests extends AuthenticatedBaseTest {
                 .as("User must exist in Table")
                 .isNotNull();
         log.info("[UI] User extracted before edit: " + uiUser);
+        ScreenshotHelper.captureAndAttach(page,"Staus UI before edited");
 
         //Insert user into PostgreSQL
         UserDAO.insertUser(uiUser, tableName);
@@ -81,7 +82,6 @@ public class DatabaseTests extends AuthenticatedBaseTest {
         assertThat(dbUser)
                 .as("User must exist in Database")
                 .isNotNull();
-
         editUserInfo();
 
         searchUser();
@@ -90,9 +90,9 @@ public class DatabaseTests extends AuthenticatedBaseTest {
         assertThat(uiUser)
                 .as("User must exist in Table")
                 .isNotNull();
+        ScreenshotHelper.captureAndAttach(page,"Staus UI after edited");
         log.info("[UI] User extracted after edited: " + uiUser);
         assertUserEquals(uiUser,dbUser);
-
         log.info("[DB] Verified user: " + dbUser);
     }
 
@@ -127,6 +127,8 @@ public class DatabaseTests extends AuthenticatedBaseTest {
                 .as("Status is matched")
                 .isNotEqualTo(db.getStatus());
         log.info("Status is mismatched");
+
+        ScreenshotHelper.captureAndAttach(page,"Verify user status is not matched");
     }
 
     private void setUpTableDatabase(){

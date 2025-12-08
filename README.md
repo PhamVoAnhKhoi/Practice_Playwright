@@ -84,23 +84,14 @@ The project adopts the Page Object Model (POM) design pattern to improve scalabi
     ```sh
     mvn clean install
     ```
+    Check installation successfully
+    ```sh
+    mvn -version
+    ```
 3.  **Install Playwright Browsers**
     ```sh
-    npx playwright install
+    mvn playwright:install
     ```
-4.  **Setup file config.properties:**
-    Most of the tests require a pre-authenticated session. To generate the auth.json file:
-    ```sh
-    //Run SetupAuthState.java to login once and save auth state
-    public class SetupAuthState {
-      public static void main(String[] args) {
-          // Setup logic for browser
-          // Save authentication state in file auth.json
-      }
-    }
-    ```
-    It will create auth.json in root of project for reuse in tests.
-
 5. **Configure PostgreSQL Database**
     1. **Install PostgreSQL (if not installed):** https://www.postgresql.org/download/
     2. **Create Database:**
@@ -131,15 +122,16 @@ The project adopts the Page Object Model (POM) design pattern to improve scalabi
           `your_password`: Your user password
 6. **Setup file config.properties**
     ```sql
-    DBURL = jdbc:postgresql://[your-host-name]:[your-port]/[your-username]
-    DBUSERNAME = [your-username]
-    DBPASSWORD = [your-user-password]
-    TABLENAME = [your-table-name]
+    DBURL = jdbc:postgresql://localhost:2909/postgres
+    DBUSERNAME = postgres
+    DBPASSWORD = Tma@2022@T1P
+    TABLENAME = users
     ```
    **Note:**  
-   `your-host-name`: Retrieved from the **Host name/address** field at **Connection** in the Server properties.  
-   `your-port`: Retrieved from the **Post** field at **Connection** in the Server properties.  
-   `your-table-name`: Your table name which you want to create
+   `localhost`: Your localhost name retrieved from the **Host name/address** field at **Connection** in the Server properties.  
+   `2909`: Your port name retrieved from the **Post** field at **Connection** in the Server properties.  
+   `postgres`: Your database name retrieved from the **Maintenance database** field at **Connection** in the Server properties.
+   `users`: Your table name which you want to create
 ## Running Tests
 The framework uses TestNG as the test runner and Playwright authentication state for all admin-related testcases.  
 Note: Testcase `DemoFailureTests` just only run when you want to test feature `Capture screanshot when faifure`.
@@ -152,7 +144,10 @@ This file stores the authenticated session so tests can run without logging in a
     ```sh
     mvn -Dexec.mainClass="utils.SetupAuthState"            
     ```
-    Note: Perform the steps based on the instructions logged in the Terminal.
+    **Note**: 
+    * Perform the steps based on the instructions logged in the Terminal.
+    * After running successfully, check the `auth.json` file to see whether the login state has been saved.
+    
 2. **Run the Entire Test Suite:**
     Run all testcases following the test suit:
     ```sh
