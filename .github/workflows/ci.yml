@@ -1,0 +1,71 @@
+name: Playwright Java Tests (CI)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧩 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ☕ Set up Java 20
+        uses: actions/setup-java@v4
+        with:
+          java-version: '20'
+          distribution: 'temurin'
+          cache: maven
+
+      # 🛠 Cài thư viện hệ thống (đã sửa lỗi Ubuntu 24.04)
+      - name: 🛠 Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libnss3 libatk1.0-0 libatk-bridge2.0-0 libcups2 \
+            libxkbcommon0 libgbm1 libpango-1.0-0 libcairo2 \
+            libasound2t64 libxshmfence1 libxrandr2 libgtk-3-0 \
+            libdrm2 libxdamage1 libxcomposite1 libxfixes3 libxext6 libxi6 \
+            fonts-liberation libcurl4 libvpx-dev libxss1 libxtst6 libpci3
+
+      # ⚙️ Cài đặt trình duyệt Playwright
+      - name: ⚙️ Install Playwright browsers
+        run: |
+          npx playwright install --with-deps chromium
+
+      # 🧱 Build project (chỉ compile, không chạy test)
+      - name: 🧱 Build project
+        run: mvn clean install -DskipTests=true
+
+      # 🧪 Chạy TestNG tests ở chế độ headless
+      - name: 🧪 Run TestNG tests (Headless)
+        env:
+          HEADLESS: true
+        run: |
+          echo "Running Playwright tests in headless mode..."
+          mvn test -Dheadless=true
+
+      # 📊 Sinh báo cáo Allure (nếu bạn dùng Allure plugin)
+      - name: 📊 Generate Allure report
+        if: always()
+        run: mvn allure:report
+
+      # 📦 Upload kết quả Allure
+      - name: 📦 Upload Allure results as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: target/allure-results
+
+      # 📦 Upload báo cáo Allure HTML
+      - name: 📦 Upload Allure report as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: target/site/allure-maven-plugin
